@@ -1,0 +1,266 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.tabs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tabChip {
+  padding: 7px 13px;
+  border: 1px solid var(--bd);
+  border-radius: 20px;
+  background: var(--card);
+  color: var(--mu);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+}
+.tabChip[data-active="true"] {
+  background: var(--bsoft);
+  border-color: var(--brand);
+  color: var(--brand);
+}
+
+.customerGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 12px;
+}
+
+.customerCardBtn {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+  border-radius: 12px;
+}
+.customerCardBtn[data-selected="true"] .customerCard {
+  border-color: var(--brand);
+  background: var(--bsoft);
+}
+
+.customerCard {
+  padding: 14px;
+}
+
+.cardTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.customerName {
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.cardMeta {
+  font-size: 11px;
+  color: var(--mu);
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+.statRow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.statCell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 8px 6px;
+  border-radius: 8px;
+  background: var(--soft);
+  text-align: center;
+}
+
+.statValue {
+  font-size: 12px;
+  font-weight: 800;
+  font-family: var(--font-mono);
+}
+
+.statLabel {
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--mu);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.detailStrip {
+  padding: 16px 18px;
+}
+
+.detailHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.detailTitle {
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.detailMeta {
+  font-size: 11.5px;
+  color: var(--mu);
+  font-weight: 600;
+  margin-top: 3px;
+}
+
+.detailFields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 11px;
+  margin-top: 14px;
+}
+
+.field {
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--soft);
+}
+
+.fieldLabel {
+  font-size: 9.5px;
+  font-weight: 700;
+  color: var(--mu);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  display: block;
+}
+
+.fieldValue {
+  font-size: 13px;
+  font-weight: 800;
+  margin-top: 4px;
+  display: block;
+}
+
+.actionRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.activityCard {
+  padding: 16px 18px;
+}
+
+.activityTitle {
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.activityList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.activityRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+}
+
+.activityDot {
+  width: 7px;
+  height: 7px;
+  flex: 0 0 7px;
+  margin-top: 5px;
+  border-radius: 50%;
+  background: var(--brand);
+}
+
+.activityEvent {
+  font-size: 12.5px;
+  font-weight: 700;
+}
+
+.activityMeta {
+  font-size: 10.5px;
+  color: var(--mu);
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.creditForm {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--bd);
+}
+
+.creditFormTitle {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--mu);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.creditFormRow {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.creditField {
+  width: 130px;
+}
+
+.creditFieldGrow {
+  flex: 1 1 220px;
+}
+
+.tableCard {
+  padding: 10px;
+}
+
+.tableScroll {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  min-width: 640px;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.table th {
+  text-align: left;
+  padding: 9px 12px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--mu);
+}
+.table td {
+  padding: 9px 12px;
+  border-top: 1px solid var(--bd);
+}

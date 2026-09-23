@@ -1,0 +1,283 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.tabs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tabChip {
+  padding: 7px 13px;
+  border: 1px solid var(--bd);
+  border-radius: 20px;
+  background: var(--card);
+  color: var(--mu);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+}
+.tabChip[data-active="true"] {
+  background: var(--bsoft);
+  border-color: var(--brand);
+  color: var(--brand);
+}
+
+.storeGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+}
+
+.storeCardBtn {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+  border-radius: 12px;
+}
+.storeCardBtn[data-selected="true"] .storeCard {
+  border-color: var(--brand);
+  background: var(--bsoft);
+}
+
+.storeCard {
+  padding: 14px;
+}
+
+.cardTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.storeName {
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.cardMeta {
+  font-size: 11px;
+  color: var(--mu);
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+.capRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.capBar {
+  flex: 1;
+  height: 6px;
+  border-radius: 4px;
+  background: var(--soft);
+  overflow: hidden;
+}
+
+.capBarFill {
+  height: 100%;
+  background: var(--brand);
+  border-radius: 4px;
+}
+
+.capLabel {
+  font-size: 10.5px;
+  font-weight: 800;
+  font-family: var(--font-mono);
+  color: var(--mu);
+}
+
+.statRow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.statCell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 8px 6px;
+  border-radius: 8px;
+  background: var(--soft);
+  text-align: center;
+}
+
+.statValue {
+  font-size: 12.5px;
+  font-weight: 800;
+  font-family: var(--font-mono);
+}
+
+.statLabel {
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--mu);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.detailStrip {
+  padding: 16px 18px;
+}
+
+.detailHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.detailTitle {
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.detailFields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 11px;
+  margin-top: 14px;
+}
+
+.field {
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--soft);
+}
+
+.fieldLabel {
+  font-size: 9.5px;
+  font-weight: 700;
+  color: var(--mu);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  display: block;
+}
+
+.fieldValue {
+  font-size: 13px;
+  font-weight: 800;
+  margin-top: 4px;
+  display: block;
+}
+
+/* ── Staff chip on cards ──────────────────────────────── */
+.staffChip {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--mu);
+}
+.staffCount {
+  font-weight: 800;
+  font-size: 12px;
+  color: var(--tx);
+}
+.staffLabel { font-weight: 600; }
+.mgrName {
+  color: var(--accent);
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100px;
+}
+
+/* ── Detail header right ─────────────────────────────── */
+.detailHeaderRight {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.totalStaffBadge {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent);
+  background: var(--accent-bg, #eef2ff);
+  border-radius: 20px;
+  padding: 3px 10px;
+}
+
+/* ── Staff section ───────────────────────────────────── */
+.staffSection {
+  margin-top: 18px;
+  border-top: 1px solid var(--bd);
+  padding-top: 14px;
+}
+.staffSectionTitle {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--mu);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.staffList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.staffRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: var(--soft);
+}
+.staffInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.staffMemberName {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--tx);
+}
+.staffMemberMeta {
+  font-size: 11px;
+  color: var(--mu);
+}
+.staffBadges {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.shiftTag {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--mu);
+  background: var(--bd);
+  border-radius: 4px;
+  padding: 2px 7px;
+}
+.noStaff {
+  margin-top: 12px;
+  font-size: 12px;
+  color: var(--mu);
+  text-align: center;
+  padding: 8px 0;
+}

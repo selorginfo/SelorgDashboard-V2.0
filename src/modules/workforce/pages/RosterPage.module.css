@@ -1,0 +1,176 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.flowCard {
+  padding: 16px 18px 10px;
+}
+
+.tabs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tabChip {
+  padding: 7px 13px;
+  border: 1px solid var(--bd);
+  border-radius: 20px;
+  background: var(--card);
+  color: var(--mu);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+}
+.tabChip[data-active="true"] {
+  background: var(--bsoft);
+  border-color: var(--brand);
+  color: var(--brand);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px;
+}
+
+.card {
+  padding: 16px;
+  border-left: 3px solid transparent;
+}
+.card[data-flag="red"] {
+  border-left-color: var(--red-tx);
+}
+.card[data-flag="amber"] {
+  border-left-color: var(--amber-tx);
+}
+
+.cardHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.shiftName {
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.metaLine {
+  font-size: 11px;
+  color: var(--mu);
+  font-weight: 600;
+  margin-top: 3px;
+}
+
+.barRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.dualBar {
+  flex: 1;
+  position: relative;
+  height: 10px;
+  border-radius: 6px;
+  background: var(--soft);
+  overflow: hidden;
+}
+
+.dualBarAssigned {
+  position: absolute;
+  inset: 0;
+  border-radius: 6px;
+  background: var(--brand);
+  opacity: 0.35;
+  transition: width 0.2s ease;
+}
+
+.dualBarConfirmed {
+  position: absolute;
+  inset: 0;
+  border-radius: 6px;
+  background: var(--brand);
+  transition: width 0.2s ease;
+}
+
+.gapText {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--mu);
+  white-space: nowrap;
+}
+
+.cardBottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.cardActions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.staffGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.staffCell {
+  display: flex;
+  flex-direction: column;
+  padding: 8px 6px;
+  border-radius: 9px;
+  background: var(--soft);
+  text-align: center;
+}
+
+.staffValue {
+  font-size: 13px;
+  font-weight: 800;
+  font-family: var(--font-mono);
+}
+.staffValue[data-tone="amber"] {
+  color: var(--amber-tx);
+}
+
+.staffLabel {
+  font-size: 8.5px;
+  color: var(--mu);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.swapRow {
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.rowMain {
+  flex: 1 1 220px;
+}

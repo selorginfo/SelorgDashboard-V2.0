@@ -1,0 +1,270 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 760px;
+}
+
+.heroCard {
+  padding: 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.avatar {
+  width: 64px;
+  height: 64px;
+  flex: 0 0 64px;
+  border-radius: 20px;
+  background: var(--bsoft);
+  color: var(--brand);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.heroBody {
+  flex: 1;
+  min-width: 200px;
+}
+
+.heroName {
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: -0.4px;
+}
+
+.heroContact {
+  font-size: 12.5px;
+  color: var(--mu);
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+.heroBadges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 11px;
+}
+
+.badgePill {
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: var(--soft);
+  color: var(--mu);
+  font-size: 11px;
+  font-weight: 700;
+}
+.badgePill[data-tone="brand"] {
+  background: var(--bsoft);
+  color: var(--brand);
+}
+
+.tabs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tabChip {
+  padding: 7px 13px;
+  border: 1px solid var(--bd);
+  border-radius: 20px;
+  background: var(--card);
+  color: var(--mu);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+}
+.tabChip[data-active="true"] {
+  background: var(--bsoft);
+  border-color: var(--brand);
+  color: var(--brand);
+}
+
+.card {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sectionTitle {
+  font-size: 14.5px;
+  font-weight: 800;
+}
+
+.sectionHint {
+  font-size: 11.5px;
+  color: var(--mu);
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+.profileGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 14px;
+  margin-top: 15px;
+}
+
+.field {
+  padding: 12px 13px;
+  border-radius: 11px;
+  background: var(--soft);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.fieldLabel {
+  font-size: 10px;
+  color: var(--mu);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.fieldValue {
+  font-size: 13.5px;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rowList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.settingRow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding: 13px 14px;
+  border: 1px solid var(--bd);
+  border-radius: 11px;
+}
+
+.settingIdentity {
+  flex: 1;
+  min-width: 180px;
+}
+
+.settingLabel {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.settingValue {
+  font-size: 11.5px;
+  color: var(--mu);
+  font-weight: 600;
+  margin-top: 3px;
+}
+
+.rowActionBtn {
+  padding: 7px 13px;
+  border: 1px solid var(--bd);
+  border-radius: 9px;
+  background: var(--soft);
+  color: var(--tx);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: border-color 0.14s ease;
+}
+.rowActionBtn:hover {
+  border-color: var(--brand);
+}
+
+.toggleState {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--mu);
+  width: 26px;
+}
+
+.sessionWhen {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--mu);
+}
+
+.sessionBadge {
+  padding: 5px 11px;
+  border-radius: 20px;
+  background: var(--soft);
+  color: var(--mu);
+  font-size: 11px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+.sessionBadge[data-current="true"] {
+  background: var(--bsoft);
+  color: var(--brand);
+  cursor: default;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+}
+
+.spacer {
+  height: 10px;
+}
+
+.toggle {
+  position: relative;
+  width: 42px;
+  height: 24px;
+  border-radius: 20px;
+  border: none;
+  background: var(--bd);
+  cursor: pointer;
+  padding: 3px;
+  flex: 0 0 42px;
+}
+.toggle:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+.toggle[data-on="true"] {
+  background: var(--brand);
+}
+
+.toggleThumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease;
+}
+.toggle[data-on="true"] .toggleThumb {
+  transform: translateX(18px);
+}
+
+@media (max-width: 560px) {
+  .profileGrid {
+    grid-template-columns: 1fr;
+  }
+}

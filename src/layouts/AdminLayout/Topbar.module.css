@@ -1,0 +1,219 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--bd);
+  background: var(--card);
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+
+.hamburgerBtn {
+  display: none;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  border-radius: 9px;
+  border: 1px solid var(--bd);
+  background: var(--soft);
+  color: var(--mu);
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.hamburgerBtn:hover {
+  color: var(--tx);
+}
+
+.breadcrumb {
+  font-size: 13.5px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.crumbMuted {
+  color: var(--mu);
+}
+.crumbSep {
+  color: var(--bd);
+}
+.crumbActive {
+  color: var(--tx);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+}
+
+.search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  border: 1px solid var(--bd);
+  border-radius: 9px;
+  background: var(--soft);
+  flex: 0 0 auto;
+  width: 220px;
+  color: var(--mu);
+}
+.search input {
+  border: 0;
+  background: transparent;
+  outline: none;
+  font-family: inherit;
+  font-size: 12.5px;
+  color: var(--tx);
+  width: 100%;
+}
+
+.iconBtn {
+  position: relative;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  border-radius: 9px;
+  border: 1px solid var(--bd);
+  background: var(--soft);
+  color: var(--mu);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.iconBtn:hover {
+  color: var(--tx);
+}
+
+.bellBadge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 20px;
+  background: var(--red-tx, #d9534f);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+}
+
+.account {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 10px 5px 5px;
+  border-radius: 10px;
+  border: 1px solid var(--bd);
+  background: var(--card);
+  color: var(--tx);
+  cursor: pointer;
+  font-family: inherit;
+}
+.account:hover {
+  background: var(--soft);
+}
+
+.avatar {
+  width: 30px;
+  height: 30px;
+  flex: 0 0 30px;
+  border-radius: 50%;
+  background: var(--bsoft);
+  color: var(--brand);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11.5px;
+  font-weight: 700;
+}
+
+.accountText {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+  text-align: left;
+}
+
+.accountName {
+  font-size: 12.5px;
+  font-weight: 700;
+  max-width: 120px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.accountRole {
+  font-size: 10.5px;
+  color: var(--mu);
+  font-weight: 600;
+}
+
+.menuName {
+  font-size: 13px;
+  font-weight: 800;
+}
+.menuEmail {
+  font-size: 11.5px;
+  color: var(--mu);
+  font-weight: 600;
+  margin-top: 2px;
+}
+.menuRoleBadge {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 3px 9px;
+  border-radius: 20px;
+  background: var(--bsoft);
+  color: var(--brand);
+  font-size: 10.5px;
+  font-weight: 700;
+}
+
+@media (max-width: 880px) {
+  .hamburgerBtn {
+    display: flex;
+  }
+}
+
+@media (max-width: 720px) {
+  .header {
+    padding: 12px 14px;
+    gap: 10px;
+  }
+  .search {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .accountText {
+    display: none;
+  }
+  .account {
+    padding: 5px;
+    border-left: none;
+  }
+  .breadcrumb {
+    font-size: 12px;
+  }
+}

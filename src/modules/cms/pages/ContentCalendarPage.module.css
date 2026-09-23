@@ -1,0 +1,499 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.hintCard {
+  padding: 16px 18px;
+}
+
+.flowCard {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+  padding: 13px 15px;
+}
+
+.hint {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--mu);
+  font-weight: 500;
+}
+
+.tabs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tabsSpacer {
+  flex: 1;
+}
+
+.tabChip {
+  padding: 7px 13px;
+  border: 1px solid var(--bd);
+  border-radius: 20px;
+  background: var(--card);
+  color: var(--mu);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+}
+.tabChip[data-active="true"] {
+  background: var(--bsoft);
+  border-color: var(--brand);
+  color: var(--brand);
+}
+
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.dateGroup {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.dateLabel {
+  flex: 0 0 100px;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--mu);
+  padding-top: 12px;
+}
+
+.dateItems {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px;
+}
+
+.item {
+  padding: 12px 13px;
+}
+.item[data-conflict="true"] {
+  border-color: var(--red-tx);
+}
+
+.itemTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.itemTime {
+  font-size: 11.5px;
+  font-weight: 800;
+  font-family: var(--font-mono);
+  color: var(--mu);
+}
+
+.itemTitle {
+  font-size: 12.5px;
+  font-weight: 700;
+  margin-top: 6px;
+}
+
+.itemMeta {
+  font-size: 10.5px;
+  color: var(--mu);
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+.itemOwner {
+  font-size: 10px;
+  color: var(--mu);
+  font-weight: 600;
+  margin-top: 6px;
+}
+
+.itemBtn {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  font-family: inherit;
+  color: inherit;
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--mu);
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  padding: 0;
+  font-family: inherit;
+  margin-bottom: 4px;
+}
+.backLink:hover {
+  color: var(--brand);
+}
+
+.detailBoard {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.editorCol {
+  flex: 2 1 340px;
+  min-width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.editorCard {
+  padding: 20px 22px;
+}
+
+.editorTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.editorLabel {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--mu);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.fieldLabel {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--mu);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-top: 16px;
+}
+
+.titleInput {
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 6px;
+  padding: 11px 13px;
+  border: 1px solid var(--bd);
+  border-radius: 10px;
+  background: var(--soft);
+  color: var(--tx);
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  outline: none;
+}
+.titleInput:focus {
+  border-color: var(--brand);
+}
+
+.bodyInput {
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 6px;
+  min-height: 96px;
+  padding: 11px 13px;
+  border: 1px solid var(--bd);
+  border-radius: 10px;
+  background: var(--soft);
+  color: var(--tx);
+  font-family: inherit;
+  font-size: 12.5px;
+  line-height: 1.6;
+  resize: vertical;
+  outline: none;
+}
+.bodyInput:focus {
+  border-color: var(--brand);
+}
+
+.editorActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.primaryActionBtn {
+  padding: 11px 18px;
+  border: none;
+  border-radius: 10px;
+  background: var(--brand);
+  color: #fff;
+  font-size: 12.5px;
+  font-weight: 800;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.secondaryActionBtn {
+  padding: 9px 13px;
+  border: 1px solid var(--bd);
+  border-radius: 9px;
+  background: var(--soft);
+  color: var(--tx);
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: border-color 0.14s ease;
+}
+.secondaryActionBtn:hover {
+  border-color: var(--brand);
+}
+
+.ladderCard {
+  padding: 20px;
+}
+
+.ladderTitle {
+  font-size: 13.5px;
+  font-weight: 800;
+}
+
+.ladderRow {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+
+.ladderStep {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ladderStepInner {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.ladderBadge {
+  width: 23px;
+  height: 23px;
+  flex: 0 0 23px;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 800;
+  font-family: var(--font-mono);
+}
+
+.ladderName {
+  font-size: 11.5px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.ladderArrow {
+  color: var(--bd);
+  font-size: 14px;
+  font-weight: 700;
+  padding: 0 4px;
+}
+
+.ladderNext {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--mu);
+  margin-top: 14px;
+  line-height: 1.5;
+}
+
+.previewCol {
+  flex: 0 0 auto;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 9px;
+}
+
+.phone {
+  width: 280px;
+  max-width: 100%;
+  box-sizing: border-box;
+  border: 9px solid var(--tx);
+  border-radius: 32px;
+  overflow: hidden;
+  box-shadow: 0 20px 46px rgba(15, 19, 25, 0.2);
+}
+
+.phoneNotch {
+  height: 22px;
+  background: var(--tx);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.phoneNotchPill {
+  width: 66px;
+  height: 13px;
+  border-radius: 10px;
+  background: #0b0f14;
+}
+
+.phoneScreen {
+  height: 400px;
+  background: var(--bg);
+  padding: 12px;
+  overflow-y: auto;
+}
+
+.previewHero {
+  height: 128px;
+  border-radius: 12px;
+  background: var(--bsoft);
+  border: 1px solid var(--bd);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px;
+}
+
+.previewHeroTitle {
+  font-size: 12.5px;
+  font-weight: 800;
+  color: var(--brand);
+  text-align: center;
+}
+
+.previewHeroKind {
+  font-size: 9.5px;
+  font-weight: 600;
+  color: var(--mu);
+  text-align: center;
+}
+
+.previewText {
+  padding: 13px;
+  border-radius: 12px;
+  background: var(--card);
+  border: 1px solid var(--bd);
+}
+
+.previewTextTitle {
+  font-size: 12.5px;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.previewTextBody {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--mu);
+  margin-top: 7px;
+  line-height: 1.6;
+}
+
+.previewFiller {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin-top: 11px;
+}
+
+.previewFillerLine {
+  height: 9px;
+  width: 64%;
+  border-radius: 5px;
+  background: var(--soft);
+}
+
+.previewFillerRow {
+  display: flex;
+  gap: 8px;
+}
+
+.previewFillerBlock {
+  flex: 1;
+  height: 62px;
+  border-radius: 10px;
+  background: var(--soft);
+}
+
+.previewFillerLine2 {
+  height: 9px;
+  width: 48%;
+  border-radius: 5px;
+  background: var(--soft);
+  margin-top: 6px;
+}
+
+.previewFillerTall {
+  height: 74px;
+  border-radius: 10px;
+  background: var(--soft);
+}
+
+.previewCaption {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--mu);
+}
+
+.propsCol {
+  flex: 1 1 234px;
+  min-width: 222px;
+  max-width: 290px;
+  padding: 18px;
+}
+
+.propsTitle {
+  font-size: 13.5px;
+  font-weight: 800;
+}
+
+.propsList {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  margin-top: 13px;
+}
+
+.propLabel {
+  font-size: 9.5px;
+  font-weight: 700;
+  color: var(--mu);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.propValue {
+  font-size: 12px;
+  font-weight: 700;
+  margin-top: 3px;
+}

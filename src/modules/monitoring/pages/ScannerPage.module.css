@@ -1,0 +1,198 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.hintCard {
+  padding: 16px 18px;
+}
+
+.hint {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--mu);
+  font-weight: 500;
+  max-width: 760px;
+}
+
+.tabs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tabChip {
+  padding: 7px 13px;
+  border: 1px solid var(--bd);
+  border-radius: 20px;
+  background: var(--card);
+  color: var(--mu);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+}
+.tabChip[data-active="true"] {
+  background: var(--bsoft);
+  border-color: var(--brand);
+  color: var(--brand);
+}
+
+.deviceGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px;
+}
+
+.deviceCard {
+  padding: 16px;
+}
+
+.deviceHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.deviceTop {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.statusDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--grey-tx);
+  flex: 0 0 auto;
+}
+.statusDot[data-tone="green"] {
+  background: var(--brand);
+}
+.statusDot[data-tone="amber"] {
+  background: var(--amber-tx);
+}
+.statusDot[data-tone="blue"] {
+  background: var(--blue-tx);
+}
+.statusDot[data-tone="red"] {
+  background: var(--red-tx);
+}
+
+.deviceId {
+  font-size: 13.5px;
+  font-weight: 800;
+  font-family: var(--font-mono);
+}
+
+.deviceStore {
+  font-size: 12px;
+  font-weight: 700;
+  margin-top: 10px;
+}
+
+.deviceOperator {
+  font-size: 11px;
+  color: var(--mu);
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.deviceFields {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  padding: 8px 6px;
+  border-radius: 9px;
+  background: var(--soft);
+  text-align: center;
+}
+
+.fieldLabel {
+  font-size: 8.5px;
+  color: var(--mu);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.fieldValue {
+  font-size: 11px;
+  font-weight: 800;
+  margin-top: 3px;
+  font-family: var(--font-mono);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.feedCard {
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.feedRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 11px 12px;
+  border-left: 3px solid var(--bd);
+  border-radius: 6px;
+}
+.feedRow[data-tone="green"] {
+  border-left-color: var(--brand);
+}
+.feedRow[data-tone="amber"] {
+  border-left-color: var(--amber-tx);
+}
+.feedRow[data-tone="blue"] {
+  border-left-color: var(--blue-tx);
+}
+.feedRow[data-tone="red"] {
+  border-left-color: var(--red-tx);
+}
+
+.feedTime {
+  font-size: 11px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: var(--mu);
+  flex: 0 0 auto;
+  padding-top: 1px;
+}
+
+.feedBody {
+  flex: 1;
+  min-width: 0;
+}
+
+.feedTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.feedAction {
+  font-size: 12.5px;
+  font-weight: 700;
+}
+
+.feedMeta {
+  font-size: 11px;
+  color: var(--mu);
+  font-weight: 600;
+  margin-top: 3px;
+}

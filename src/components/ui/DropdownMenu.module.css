@@ -1,0 +1,48 @@
+.content {
+  background: var(--card);
+  border: 1px solid var(--bd);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  padding: 8px;
+  min-width: 220px;
+  z-index: 85;
+}
+
+.header {
+  padding: 10px 11px 12px;
+  border-bottom: 1px solid var(--bd);
+  margin-bottom: 6px;
+}
+
+.item {
+  padding: 9px 11px;
+  border-radius: 9px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--tx);
+  cursor: pointer;
+  outline: none;
+}
+
+.itemLabel {
+  font-size: 12.5px;
+  font-weight: 700;
+}
+
+.itemSub {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--mu);
+  margin-top: 2px;
+}
+.item[data-highlighted] {
+  background: var(--soft);
+}
+.item[data-disabled] {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.destructive {
+  color: var(--red-tx);
+}

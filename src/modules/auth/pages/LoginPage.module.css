@@ -1,0 +1,185 @@
+.wrap {
+  display: flex;
+  min-height: 100vh;
+  background: var(--bg);
+}
+
+.brand {
+  flex: 1.05;
+  min-width: 0;
+  background: var(--brand);
+  color: #fff;
+  padding: 54px 52px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  animation: omIn 0.4s ease both;
+}
+
+.brandTop {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mark {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.16);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 17px;
+}
+
+.brandName {
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.2px;
+}
+
+.brandSub {
+  font-size: 10.5px;
+  font-weight: 600;
+  opacity: 0.72;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.pitch {
+  max-width: 460px;
+  animation: omUp 0.5s cubic-bezier(0.22, 0.8, 0.3, 1) both;
+  animation-delay: 0.1s;
+}
+
+.headline {
+  font-size: 38px;
+  font-weight: 800;
+  letter-spacing: -1.2px;
+  line-height: 1.12;
+}
+
+.subline {
+  font-size: 14px;
+  font-weight: 500;
+  opacity: 0.82;
+  margin-top: 16px;
+  line-height: 1.6;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+  max-width: 520px;
+}
+
+.statValue {
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.6px;
+}
+
+.statLabel {
+  font-size: 11px;
+  font-weight: 600;
+  opacity: 0.75;
+  margin-top: 3px;
+  line-height: 1.35;
+}
+
+.formSide {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 32px;
+}
+
+.form {
+  width: 100%;
+  max-width: 392px;
+  animation: omPop 0.45s cubic-bezier(0.22, 0.8, 0.3, 1) both;
+  animation-delay: 0.08s;
+}
+
+.formTitle {
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.6px;
+}
+
+.formSub {
+  font-size: 12.5px;
+  color: var(--mu);
+  font-weight: 600;
+  margin-top: 6px;
+}
+
+.spacer {
+  height: 16px;
+}
+
+.errorBanner {
+  margin-top: 14px;
+  padding: 9px 12px;
+  border-radius: 9px;
+  background: var(--red-bg);
+  border: 1px solid #f0c3c1;
+  color: var(--red-tx);
+  font-size: 11.5px;
+  font-weight: 700;
+  animation: omUp 0.2s ease both;
+}
+
+.submit {
+  width: 100%;
+  margin-top: 20px;
+  padding: 12px;
+  font-size: 13.5px;
+}
+
+.footerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 14px;
+}
+
+.footerRow a {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.sso {
+  font-size: 11.5px;
+  color: var(--mu);
+  font-weight: 600;
+}
+
+.securityNote {
+  margin-top: 26px;
+  padding-top: 16px;
+  border-top: 1px solid var(--bd);
+  font-size: 11px;
+  color: var(--mu);
+  font-weight: 600;
+  line-height: 1.6;
+  display: flex;
+  gap: 6px;
+}
+
+@media (max-width: 860px) {
+  .wrap {
+    flex-direction: column;
+  }
+  .brand {
+    padding: 32px 28px;
+  }
+  .headline {
+    font-size: 28px;
+  }
+}

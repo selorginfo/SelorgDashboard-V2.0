@@ -1,0 +1,97 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.hintCard {
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.hint {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--mu);
+  font-weight: 500;
+  line-height: 1.55;
+  max-width: 760px;
+}
+
+.hintRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.hintActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.rowCount {
+  font-size: 11px;
+  color: var(--mu);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.readOnlyPill {
+  padding: 6px 11px;
+  border: 1px solid var(--bd);
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--mu);
+  white-space: nowrap;
+}
+
+.flowCard {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+  padding: 13px 15px;
+}
+
+.flowLabel {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--mu);
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  margin-right: 4px;
+}
+
+.createForm {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.createField {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.createLabel {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--mu);
+}
+
+.tabsRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 14px 18px 0;
+}

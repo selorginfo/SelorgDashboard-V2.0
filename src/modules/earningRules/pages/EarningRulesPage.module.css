@@ -1,0 +1,259 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.hintCard {
+  padding: 16px 18px;
+}
+
+.flowCard {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+  padding: 13px 15px;
+}
+
+.hint {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--mu);
+  font-weight: 500;
+  line-height: 1.55;
+  max-width: 760px;
+}
+
+.tabs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tabChip {
+  padding: 7px 13px;
+  border: 1px solid var(--bd);
+  border-radius: 20px;
+  background: var(--card);
+  color: var(--mu);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+}
+.tabChip[data-active="true"] {
+  background: var(--bsoft);
+  border-color: var(--brand);
+  color: var(--brand);
+}
+
+.board {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.list {
+  flex: 1 1 320px;
+  max-width: 380px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.listRow {
+  text-align: left;
+  border: 1px solid var(--bd);
+  border-radius: 10px;
+  padding: 10px 11px;
+  background: var(--card);
+  cursor: pointer;
+  font-family: inherit;
+}
+.listRow[data-selected="true"] {
+  background: var(--bsoft);
+  border-color: var(--brand);
+}
+
+.listTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.listName {
+  font-size: 12.5px;
+  font-weight: 700;
+}
+
+.listMeta {
+  font-size: 10.5px;
+  color: var(--mu);
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+.detail {
+  flex: 2 1 420px;
+  padding: 20px 22px;
+  border-left: 3px solid var(--brand);
+}
+
+.detailHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.detailName {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.4px;
+}
+
+.detailMeta {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--mu);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-top: 5px;
+}
+
+.detailBadges {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.versionBadge {
+  font-size: 11px;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: var(--soft);
+  color: var(--mu);
+  font-family: var(--font-mono);
+}
+
+.formulaCard {
+  margin-top: 18px;
+  padding: 16px 18px;
+  border-radius: 12px;
+  background: var(--bsoft);
+}
+
+.formulaLabel {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--brand);
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.formulaIf {
+  font-size: 15px;
+  font-weight: 700;
+  margin-top: 5px;
+  line-height: 1.4;
+}
+
+.formulaThen {
+  font-size: 27px;
+  font-weight: 800;
+  letter-spacing: -0.8px;
+  margin-top: 3px;
+  font-family: var(--font-mono);
+}
+
+.conflictBanner {
+  margin-top: 14px;
+  padding: 13px 15px;
+  border-radius: 11px;
+  background: var(--red-bg);
+  border: 1px solid #f0c3c1;
+}
+
+.conflictTitle {
+  font-size: 9.5px;
+  font-weight: 800;
+  color: var(--red-tx);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.conflictBody {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--red-tx);
+  margin-top: 5px;
+  line-height: 1.5;
+}
+
+.previewCard {
+  margin-top: 18px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: var(--soft);
+}
+
+.previewTitle {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--mu);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.previewRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.previewUnit {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--mu);
+}
+
+.previewEquals {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--mu);
+}
+
+.previewResult {
+  font-size: 18px;
+  font-weight: 800;
+  font-family: var(--font-mono);
+}
+
+.previewFlatLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--mu);
+}
+
+.previewFooter {
+  margin-top: 10px;
+  font-size: 10.5px;
+  color: var(--mu);
+  font-weight: 600;
+}
+
+.actionsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: 18px;
+}

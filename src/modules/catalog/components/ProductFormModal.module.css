@@ -1,0 +1,204 @@
+/* ── Form sections ─────────────────────────────────────────────────── */
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  background: var(--bg-subtle);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+}
+
+.sectionTitle {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--tx-muted);
+  margin-bottom: 2px;
+}
+
+.textarea {
+  width: 100%;
+  min-height: 72px;
+  resize: vertical;
+  padding: 8px 10px;
+  font-size: 0.875rem;
+  font-family: inherit;
+  background: var(--bg);
+  color: var(--tx);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  transition: border-color 0.13s;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.textarea:focus {
+  border-color: var(--accent);
+}
+
+.computedField {
+  padding: 8px 10px;
+  font-size: 0.875rem;
+  background: var(--bg-subtle);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--tx-muted);
+  min-height: 36px;
+}
+
+.warehouseSection {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  background: var(--bg-subtle);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+}
+
+.warehouseSectionTitle {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--tx-muted);
+}
+
+.noWarehouses {
+  font-size: 0.85rem;
+  color: var(--tx-muted);
+  margin: 0;
+}
+
+/* Table */
+.stockTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.stockTable thead tr {
+  border-bottom: 1px solid var(--border);
+}
+
+.stockTable thead th {
+  padding: 6px 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--tx-muted);
+  text-align: left;
+}
+
+.thWarehouse { width: auto; }
+.thQty { width: 120px; }
+.thActions { width: 72px; }
+
+.stockRow td {
+  padding: 6px 8px 6px 0;
+  vertical-align: middle;
+}
+
+.stockRow:not(:last-child) td {
+  border-bottom: 1px solid var(--border);
+}
+
+.tdWarehouse { padding-right: 8px !important; }
+.tdQty { padding-right: 8px !important; }
+
+.tdActions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+
+/* + button */
+.addRowBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--border);
+  background: var(--bg);
+  color: var(--tx-muted);
+  cursor: pointer;
+  transition: border-color 0.13s, color 0.13s, background 0.13s;
+  flex-shrink: 0;
+}
+
+.addRowBtn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 8%, var(--bg));
+}
+
+/* trash button */
+.deleteRowBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid transparent;
+  background: transparent;
+  color: var(--tx-muted);
+  cursor: pointer;
+  transition: border-color 0.13s, color 0.13s, background 0.13s;
+  flex-shrink: 0;
+}
+
+.deleteRowBtn:hover {
+  border-color: #ef444466;
+  color: #ef4444;
+  background: #ef444412;
+}
+
+/* empty state inside table */
+.emptyRow {
+  padding: 10px 0 !important;
+  font-size: 0.85rem;
+  color: var(--tx-muted);
+  text-align: left;
+}
+
+.addInlineBtn {
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* "Add warehouse stock" button shown below empty table */
+.addFirstRowBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  border: 1.5px dashed color-mix(in srgb, var(--accent) 40%, transparent);
+  border-radius: var(--radius-sm);
+  padding: 6px 12px;
+  cursor: pointer;
+  width: 100%;
+  justify-content: center;
+  transition: background 0.13s, border-color 0.13s;
+}
+
+.addFirstRowBtn:hover {
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  border-color: var(--accent);
+}

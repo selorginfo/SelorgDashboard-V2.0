@@ -1,0 +1,133 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.headerRow {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.board {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.column {
+  flex: 0 0 260px;
+  width: 260px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.columnHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 4px;
+}
+
+.columnTitle {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--mu);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.columnCount {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--mu);
+  background: var(--soft);
+  border-radius: 20px;
+  padding: 1px 8px;
+}
+
+.columnBody {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 40px;
+}
+
+.cardEl {
+  padding: 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.cardTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.cardId {
+  font-size: 12.5px;
+  font-weight: 800;
+  font-family: var(--font-mono);
+}
+
+.cardStore {
+  font-size: 12.5px;
+  font-weight: 700;
+}
+
+.cardQty {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--mu);
+}
+
+.cardMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--mu);
+}
+
+.cardFigs {
+  display: flex;
+  gap: 16px;
+  margin-top: 2px;
+}
+
+.cardFig {
+  display: flex;
+  flex-direction: column;
+}
+
+.cardFigValue {
+  font-size: 13.5px;
+  font-weight: 800;
+  font-family: var(--font-mono);
+}
+
+.cardFigLabel {
+  font-size: 9.5px;
+  font-weight: 700;
+  color: var(--mu);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.cardBottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 4px;
+}

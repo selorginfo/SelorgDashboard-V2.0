@@ -1,0 +1,46 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 6px;
+  padding: 48px 24px;
+  color: var(--mu);
+}
+
+.wrap[data-tone="error"] {
+  color: var(--red-tx);
+}
+
+.title {
+  font-size: 14.5px;
+  font-weight: 800;
+  color: var(--tx);
+}
+
+.wrap[data-tone="error"] .title {
+  color: var(--red-tx);
+}
+
+.description {
+  font-size: 12.5px;
+  font-weight: 500;
+  max-width: 420px;
+  line-height: 1.5;
+}
+
+.action {
+  margin-top: 8px;
+}
+
+.retry {
+  margin-top: 6px;
+  padding: 8px 14px;
+  border-radius: 9px;
+  border: 1px solid var(--bd);
+  background: var(--soft);
+  color: var(--tx);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}

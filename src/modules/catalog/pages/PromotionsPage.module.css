@@ -1,0 +1,213 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.tabs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tabChip {
+  padding: 7px 13px;
+  border: 1px solid var(--bd);
+  border-radius: 20px;
+  background: var(--card);
+  color: var(--mu);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+}
+.tabChip[data-active="true"] {
+  background: var(--bsoft);
+  border-color: var(--brand);
+  color: var(--brand);
+}
+
+.tabsSpacer {
+  flex: 1;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px;
+}
+
+.card {
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cardTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.code {
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.meta {
+  font-size: 11px;
+  color: var(--mu);
+  font-weight: 600;
+}
+
+.valueRow {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.valueCell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 8px 6px;
+  border-radius: 8px;
+  background: var(--soft);
+  text-align: center;
+}
+
+.valueNum {
+  font-size: 12.5px;
+  font-weight: 800;
+  font-family: var(--font-mono);
+}
+
+.valueLabel {
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--mu);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.usageBlock {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.usageBar {
+  height: 5px;
+  border-radius: 3px;
+  background: var(--soft);
+  overflow: hidden;
+}
+
+.usageFill {
+  height: 100%;
+  border-radius: 3px;
+  background: var(--brand);
+}
+
+.usageLabel {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--mu);
+}
+
+.window {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--tx);
+  margin-top: 6px;
+}
+
+.actionRow {
+  margin-top: 12px;
+}
+
+.bannerList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.bannerRow {
+  display: grid;
+  grid-template-columns: minmax(140px, 1.4fr) repeat(3, minmax(90px, 1fr)) auto;
+  align-items: center;
+  gap: 14px;
+  padding: 13px 14px;
+}
+
+.bannerName {
+  font-size: 12.5px;
+  font-weight: 800;
+}
+
+.bannerField {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.fieldLabel {
+  font-size: 8.5px;
+  color: var(--mu);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.fieldValue {
+  font-size: 11px;
+  font-weight: 700;
+  margin-top: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tableCard {
+  padding: 10px;
+}
+
+.tableScroll {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  min-width: 640px;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.table th {
+  text-align: left;
+  padding: 9px 12px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--mu);
+}
+.table td {
+  padding: 9px 12px;
+  border-top: 1px solid var(--bd);
+}
+
+.mono {
+  font-family: var(--font-mono);
+}
+
+@media (max-width: 820px) {
+  .bannerRow {
+    grid-template-columns: 1fr 1fr;
+  }
+}

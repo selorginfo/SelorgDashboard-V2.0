@@ -1,0 +1,368 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.hintCard {
+  padding: 16px 18px;
+}
+
+.flowCard {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+  padding: 13px 15px;
+}
+
+.hint {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--mu);
+  font-weight: 500;
+  line-height: 1.55;
+  max-width: 760px;
+}
+
+.board {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.surfacesCard {
+  flex: 1 1 214px;
+  min-width: 200px;
+  max-width: 258px;
+  padding: 12px;
+}
+
+.surfacesTitle {
+  padding: 4px 8px 10px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--mu);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.surfaceList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.surfaceRow {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 10px;
+  border: 1px solid var(--bd);
+  border-radius: 9px;
+  background: var(--card);
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  width: 100%;
+  color: var(--tx);
+  transition: all 0.16s ease;
+}
+.surfaceRow[data-active="true"] {
+  background: var(--bsoft);
+  border-color: var(--brand);
+  color: var(--brand);
+}
+
+.surfaceIni {
+  width: 30px;
+  height: 22px;
+  flex: 0 0 30px;
+  border-radius: 6px;
+  background: var(--soft);
+  color: var(--mu);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 800;
+  font-family: var(--font-mono);
+}
+.surfaceRow[data-active="true"] .surfaceIni {
+  background: var(--brand);
+  color: #fff;
+}
+
+.surfaceBody {
+  flex: 1;
+  min-width: 0;
+}
+
+.surfaceName {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.surfaceLive {
+  display: block;
+  font-size: 9.5px;
+  font-weight: 600;
+  opacity: 0.72;
+  margin-top: 1px;
+}
+
+.surfaceCount {
+  font-size: 10.5px;
+  font-weight: 800;
+  opacity: 0.72;
+  font-family: var(--font-mono);
+}
+
+.surfaceNote {
+  margin-top: 14px;
+  padding: 11px 12px;
+  border-radius: 10px;
+  background: var(--soft);
+}
+
+.surfaceNoteTitle {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--mu);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.surfaceNoteBody {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--mu);
+  margin-top: 5px;
+  line-height: 1.5;
+}
+
+.createBtn {
+  margin-top: 12px;
+  padding: 10px;
+  border: none;
+  border-radius: 10px;
+  background: var(--brand);
+  color: #fff;
+  font-size: 12.5px;
+  font-weight: 700;
+  text-align: center;
+  cursor: pointer;
+  width: 100%;
+  font-family: inherit;
+}
+
+.lanesCol {
+  flex: 3 1 400px;
+  min-width: 320px;
+}
+
+.typeTabs {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.typeTabsSpacer {
+  flex: 1;
+}
+
+.typeTabsLabel {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--mu);
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  margin-right: 3px;
+}
+
+.typeChip {
+  padding: 5px 11px;
+  border: 1px solid var(--bd);
+  border-radius: 20px;
+  background: var(--card);
+  color: var(--mu);
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.16s ease;
+}
+.typeChip[data-active="true"] {
+  background: var(--bsoft);
+  border-color: var(--brand);
+  color: var(--brand);
+}
+
+.lanes {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.laneHeader {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 11px;
+}
+
+.laneStep {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
+  border-radius: 6px;
+  background: var(--brand);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 800;
+  font-family: var(--font-mono);
+}
+
+.laneName {
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.laneCount {
+  font-size: 11px;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 20px;
+  background: var(--bsoft);
+  color: var(--brand);
+  font-family: var(--font-mono);
+}
+
+.laneGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(258px, 1fr));
+  gap: 12px;
+}
+
+.laneCard {
+  background: var(--card);
+  border: 1px solid var(--bd);
+  border-radius: 13px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.laneCardTop {
+  height: 84px;
+  background: var(--soft);
+  border-bottom: 1px solid var(--bd);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.laneCardIni {
+  width: 44px;
+  height: 44px;
+  border-radius: 13px;
+  background: var(--bsoft);
+  color: var(--brand);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.laneCardType {
+  position: absolute;
+  bottom: 7px;
+  right: 9px;
+  font-size: 9.5px;
+  font-weight: 700;
+  color: var(--mu);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.laneCardBody {
+  padding: 13px 14px;
+}
+
+.laneCardTitle {
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.laneCardMeta {
+  font-size: 10.5px;
+  color: var(--mu);
+  font-weight: 600;
+  margin-top: 5px;
+}
+
+.laneCardBottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 11px;
+  padding-top: 10px;
+  border-top: 1px solid var(--bd);
+}
+
+.laneCardWhen {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--mu);
+}
+
+.laneCardAuthor {
+  font-size: 10px;
+  color: var(--mu);
+  font-weight: 600;
+  margin-top: 7px;
+}
+
+.advanceBtn {
+  margin-top: 10px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 6px 8px;
+  border: 1px dashed var(--bd);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--mu);
+  font-size: 10.5px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+}
+.advanceBtn:hover {
+  border-color: var(--brand);
+  color: var(--brand);
+}
+
+.laneEmpty {
+  padding: 14px;
+  border: 1px dashed var(--bd);
+  border-radius: 12px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--mu);
+}

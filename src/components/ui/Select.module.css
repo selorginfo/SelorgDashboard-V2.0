@@ -1,0 +1,57 @@
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 11px 13px;
+  border: 1px solid var(--bd);
+  border-radius: 10px;
+  background: var(--card);
+  color: var(--tx);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.trigger:focus {
+  outline: none;
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px var(--bsoft);
+}
+
+.icon {
+  color: var(--mu);
+  font-size: 11px;
+}
+
+.content {
+  background: var(--card);
+  border: 1px solid var(--bd);
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  z-index: 200;
+  min-width: var(--radix-select-trigger-width);
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--tx);
+  cursor: pointer;
+  outline: none;
+}
+.item[data-highlighted] {
+  background: var(--soft);
+}
+
+.indicator {
+  color: var(--brand);
+  font-size: 11px;
+}

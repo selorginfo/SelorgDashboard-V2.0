@@ -1,0 +1,453 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.hintCard {
+  padding: 16px 18px;
+}
+
+.flowCard {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+  padding: 13px 15px;
+}
+
+.hint {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--mu);
+  font-weight: 500;
+  line-height: 1.55;
+  max-width: 760px;
+}
+
+.tabs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tabsSpacer {
+  flex: 1;
+}
+
+.tabChip {
+  padding: 7px 13px;
+  border: 1px solid var(--bd);
+  border-radius: 20px;
+  background: var(--card);
+  color: var(--mu);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+}
+.tabChip[data-active="true"] {
+  background: var(--bsoft);
+  border-color: var(--brand);
+  color: var(--brand);
+}
+
+.board {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.leftCol {
+  flex: 1 1 210px;
+  min-width: 196px;
+  max-width: 250px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.paletteCard {
+  padding: 12px;
+}
+
+.cardLabel {
+  padding: 4px 6px 9px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--mu);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.palette {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.paletteItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px dashed var(--bd);
+  border-radius: 9px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--tx);
+  cursor: pointer;
+  background: transparent;
+  font-family: inherit;
+  text-align: left;
+  transition: border-color 0.14s ease, background 0.14s ease;
+}
+.paletteItem:hover {
+  border-color: var(--brand);
+  background: var(--bsoft);
+}
+
+.paletteItemPlus {
+  color: var(--brand);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.sectionsCard {
+  padding: 12px;
+}
+
+.sectionsList {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.sectionRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 10px;
+  border: 1px solid var(--bd);
+  border-radius: 9px;
+  background: var(--card);
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  width: 100%;
+}
+.sectionRow[data-selected="true"] {
+  border-color: var(--brand);
+  background: var(--bsoft);
+}
+
+.sectionOrder {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  border-radius: 5px;
+  background: var(--soft);
+  color: var(--mu);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 800;
+  font-family: var(--font-mono);
+}
+
+.sectionName {
+  flex: 1;
+  min-width: 0;
+  font-size: 11.5px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sectionDot {
+  width: 7px;
+  height: 7px;
+  flex: 0 0 7px;
+  border-radius: 50%;
+  background: var(--bd);
+}
+.sectionDot[data-on="true"] {
+  background: var(--brand);
+}
+
+.previewCol {
+  flex: 0 0 auto;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 9px;
+}
+
+.phone {
+  width: 322px;
+  max-width: 100%;
+  box-sizing: border-box;
+  border: 9px solid var(--tx);
+  border-radius: 34px;
+  background: var(--card);
+  overflow: hidden;
+  box-shadow: 0 22px 50px rgba(15, 19, 25, 0.22);
+}
+
+.phoneNotch {
+  height: 24px;
+  background: var(--tx);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.phoneNotchPill {
+  width: 74px;
+  height: 15px;
+  border-radius: 12px;
+  background: #0b0f14;
+}
+
+.phoneScreen {
+  height: 520px;
+  overflow-y: auto;
+  background: var(--bg);
+}
+
+.phoneHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 11px 13px;
+  background: var(--brand);
+  color: #fff;
+}
+
+.phoneHeaderLabel {
+  font-size: 9px;
+  font-weight: 700;
+  opacity: 0.82;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.phoneHeaderValue {
+  font-size: 11.5px;
+  font-weight: 800;
+  margin-top: 2px;
+}
+
+.phoneHeaderAvatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 800;
+  flex: 0 0 24px;
+}
+
+.phoneBody {
+  padding: 9px 11px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.previewStrip {
+  padding: 8px 11px;
+  border-radius: 9px;
+  background: var(--bsoft);
+  border: 1px solid var(--bd);
+}
+
+.previewStripName {
+  font-size: 10.5px;
+  font-weight: 800;
+  color: var(--brand);
+}
+
+.previewStripBound {
+  font-size: 9.5px;
+  font-weight: 600;
+  color: var(--mu);
+  margin-top: 2px;
+}
+
+.previewHero {
+  height: 112px;
+  border-radius: 11px;
+  background: var(--soft);
+  border: 1px solid var(--bd);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.previewHeroName {
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.previewHeroBound {
+  font-size: 9.5px;
+  font-weight: 600;
+  color: var(--mu);
+}
+
+.previewCarouselName {
+  font-size: 11px;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
+.previewCarouselTiles {
+  display: flex;
+  gap: 7px;
+  overflow: hidden;
+}
+
+.previewTile {
+  flex: 0 0 62px;
+}
+
+.previewTileBox {
+  height: 56px;
+  border-radius: 9px;
+  background: var(--soft);
+  border: 1px solid var(--bd);
+}
+
+.previewTileLine {
+  height: 6px;
+  width: 80%;
+  border-radius: 4px;
+  background: var(--soft);
+  margin-top: 5px;
+}
+
+.previewBlock {
+  padding: 11px;
+  border-radius: 11px;
+  background: var(--card);
+  border: 1px solid var(--bd);
+}
+
+.previewBlockName {
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.previewBlockLine1 {
+  height: 6px;
+  width: 92%;
+  border-radius: 4px;
+  background: var(--soft);
+  margin-top: 8px;
+}
+
+.previewBlockLine2 {
+  height: 6px;
+  width: 74%;
+  border-radius: 4px;
+  background: var(--soft);
+  margin-top: 5px;
+}
+
+.previewBlockBound {
+  font-size: 9.5px;
+  font-weight: 600;
+  color: var(--mu);
+  margin-top: 8px;
+}
+
+.previewCaption {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--mu);
+  text-align: center;
+}
+
+.detailCol {
+  flex: 1 1 244px;
+  min-width: 230px;
+  max-width: 300px;
+  padding: 16px;
+}
+
+.detailName {
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.25px;
+  margin-top: 6px;
+}
+
+.fieldsList {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin-top: 14px;
+}
+
+.fieldRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.fieldLabel {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--mu);
+  letter-spacing: 0.04em;
+}
+
+.fieldValue {
+  font-size: 11.5px;
+  font-weight: 700;
+  text-align: right;
+}
+
+.detailActions {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--bd);
+}
+
+.detailActionBtn {
+  padding: 8px 12px;
+  border: 1px solid var(--bd);
+  border-radius: 9px;
+  background: var(--soft);
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: center;
+  font-family: inherit;
+  color: var(--tx);
+  transition: border-color 0.14s ease, color 0.14s ease;
+}
+.detailActionBtn:hover {
+  border-color: var(--brand);
+  color: var(--brand);
+}
+.detailActionBtn[data-primary="true"] {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: #fff;
+}

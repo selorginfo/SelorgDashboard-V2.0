@@ -1,0 +1,144 @@
+.map {
+  position: relative;
+  height: 340px;
+  border: 1px solid var(--bd);
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--soft);
+  box-shadow: var(--shadow);
+}
+
+.grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--bd) 1px, transparent 1px),
+    linear-gradient(90deg, var(--bd) 1px, transparent 1px);
+  background-size: 44px 44px;
+  opacity: 0.5;
+}
+
+.zoneA {
+  position: absolute;
+  left: 8%;
+  top: 18%;
+  width: 46%;
+  height: 52%;
+  border: 1px dashed var(--bd);
+  border-radius: 34% 66% 48% 52%;
+  opacity: 0.8;
+}
+
+.zoneB {
+  position: absolute;
+  left: 52%;
+  top: 10%;
+  width: 40%;
+  height: 44%;
+  border: 1px dashed var(--bd);
+  border-radius: 58% 42% 60% 40%;
+  opacity: 0.8;
+}
+
+.caption {
+  position: absolute;
+  left: 12px;
+  top: 12px;
+  padding: 5px 10px;
+  border-radius: 8px;
+  background: var(--card);
+  border: 1px solid var(--bd);
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--mu);
+}
+
+.liveTag {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--brand);
+}
+
+.liveDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--brand);
+  animation: omPulse 1.6s ease-in-out infinite;
+}
+
+.pinWrap {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: omPop 0.4s cubic-bezier(0.22, 0.8, 0.3, 1) both;
+}
+
+.pinRing {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: omPulse 2.4s ease-in-out infinite;
+}
+.pinRing[data-tone="blue"] {
+  background: var(--blue-bg);
+}
+.pinRing[data-tone="red"] {
+  background: var(--red-bg);
+}
+.pinRing[data-tone="green"] {
+  background: var(--bsoft);
+}
+.pinRing[data-tone="grey"] {
+  background: var(--grey-bg);
+}
+.pinRing[data-selected="true"] {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+.pinDot {
+  width: 60%;
+  height: 60%;
+  border-radius: 50%;
+  border: 2px solid var(--card);
+}
+.pinDot[data-tone="blue"] {
+  background: var(--blue-tx);
+}
+.pinDot[data-tone="red"] {
+  background: var(--red-tx);
+}
+.pinDot[data-tone="green"] {
+  background: var(--brand);
+}
+.pinDot[data-tone="grey"] {
+  background: var(--mu);
+}
+
+.pinLabel {
+  margin-top: 3px;
+  padding: 2px 7px;
+  border-radius: 20px;
+  background: var(--card);
+  border: 1px solid var(--bd);
+  font-size: 9.5px;
+  font-weight: 700;
+  white-space: nowrap;
+  text-align: center;
+}

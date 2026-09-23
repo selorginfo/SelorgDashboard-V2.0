@@ -1,0 +1,124 @@
+.list {
+  flex: 1 1 260px;
+  min-width: 250px;
+  max-width: 300px;
+  box-sizing: border-box;
+  background: var(--card);
+  border: 1px solid var(--bd);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  padding: 12px;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2px 6px 11px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--mu);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.count {
+  font-family: var(--font-mono);
+}
+
+.rows {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.row {
+  text-align: left;
+  border: 1px solid var(--bd);
+  border-left: 3px solid var(--bd);
+  border-radius: 10px;
+  background: var(--card);
+  padding: 10px 11px;
+  cursor: pointer;
+  font-family: inherit;
+  width: 100%;
+  box-sizing: border-box;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease,
+    transform 0.12s ease;
+}
+.row:hover {
+  transform: translateX(2px);
+}
+.row[data-selected="true"] {
+  background: var(--bsoft);
+  border-color: var(--brand);
+}
+.row[data-rail="red"] {
+  border-left-color: var(--red-tx);
+}
+.row[data-rail="amber"] {
+  border-left-color: var(--amber-tx);
+}
+.row[data-rail="blue"] {
+  border-left-color: var(--blue-tx);
+}
+.row[data-rail="green"] {
+  border-left-color: var(--brand);
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.id {
+  font-size: 12.5px;
+  font-weight: 800;
+  font-family: var(--font-mono);
+}
+
+.value {
+  font-size: 11.5px;
+  font-weight: 800;
+  font-family: var(--font-mono);
+}
+
+.customer {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--tx);
+  margin-top: 4px;
+}
+
+.store {
+  font-size: 10.5px;
+  color: var(--mu);
+  font-weight: 600;
+  margin-top: 3px;
+}
+
+.badges {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+.sla {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--mu);
+}
+.sla[data-sla="Breached"] {
+  color: var(--red-tx);
+}
+.sla[data-sla="At risk"] {
+  color: var(--amber-tx);
+}

@@ -1,0 +1,267 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.tabs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tabsSpacer {
+  flex: 1;
+}
+
+.tabChip {
+  padding: 7px 13px;
+  border: 1px solid var(--bd);
+  border-radius: 20px;
+  background: var(--card);
+  color: var(--mu);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+}
+.tabChip[data-active="true"] {
+  background: var(--bsoft);
+  border-color: var(--brand);
+  color: var(--brand);
+}
+
+.productGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 12px;
+}
+
+.productCard {
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.productImage {
+  width: 100%;
+  height: 120px;
+  object-fit: contain;
+  border-radius: 10px;
+  background: var(--soft);
+  margin-bottom: 6px;
+}
+
+.productImageFallback {
+  width: 100%;
+  height: 120px;
+  border-radius: 10px;
+  background: var(--soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--mu);
+  margin-bottom: 6px;
+  letter-spacing: 0.05em;
+}
+
+.cardTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.sku {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--mu);
+  font-family: var(--font-mono);
+}
+
+.productName {
+  font-size: 13px;
+  font-weight: 800;
+  margin-top: 4px;
+}
+
+.cardMeta {
+  font-size: 11px;
+  color: var(--mu);
+  font-weight: 600;
+}
+
+.priceRow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.priceCell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 8px 6px;
+  border-radius: 8px;
+  background: var(--soft);
+  text-align: center;
+}
+
+.priceValue {
+  font-size: 12.5px;
+  font-weight: 800;
+  font-family: var(--font-mono);
+}
+.priceValue[data-strike] {
+  text-decoration: line-through;
+  color: var(--mu);
+  font-weight: 600;
+}
+
+.priceLabel {
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--mu);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.actionRow {
+  margin-top: 12px;
+}
+
+.searchRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.searchWrap {
+  position: relative;
+  flex: 1;
+  max-width: 420px;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 11px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--mu);
+  pointer-events: none;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 9px 12px 9px 34px;
+  border: 1px solid var(--bd);
+  border-radius: 10px;
+  background: var(--card);
+  font-size: 13px;
+  font-family: inherit;
+  color: var(--tx);
+  outline: none;
+}
+.searchInput:focus {
+  border-color: var(--brand);
+}
+.searchInput::placeholder {
+  color: var(--mu);
+}
+
+.warehouseFilter {
+  padding: 8px 10px;
+  border: 1px solid var(--bd);
+  border-radius: 8px;
+  background: var(--card);
+  color: var(--tx);
+  font-size: 13px;
+  font-family: inherit;
+  min-width: 160px;
+  cursor: pointer;
+}
+.warehouseFilter:focus {
+  outline: 2px solid var(--brand);
+  outline-offset: 1px;
+}
+
+.resultCount {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--mu);
+  white-space: nowrap;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 8px 0 4px;
+}
+
+.pageBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--bd);
+  border-radius: 8px;
+  background: var(--card);
+  cursor: pointer;
+  color: var(--tx);
+}
+.pageBtn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+.pageBtn:not(:disabled):hover {
+  background: var(--soft);
+}
+
+.pageInfo {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--tx);
+  min-width: 120px;
+  text-align: center;
+}
+
+.tableCard {
+  padding: 10px;
+}
+
+.tableScroll {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  min-width: 640px;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.table th {
+  text-align: left;
+  padding: 9px 12px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--mu);
+}
+.table td {
+  padding: 9px 12px;
+  border-top: 1px solid var(--bd);
+}
+
+.mono {
+  font-family: var(--font-mono);
+}

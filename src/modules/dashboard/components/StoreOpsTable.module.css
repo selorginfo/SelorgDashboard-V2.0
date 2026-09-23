@@ -1,0 +1,67 @@
+.card {
+  overflow: hidden;
+}
+
+.title {
+  padding: 16px 18px 4px;
+  font-size: 14.5px;
+  font-weight: 800;
+}
+
+.scroll {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  min-width: 520px;
+  border-collapse: collapse;
+  font-size: 12.5px;
+}
+
+.table thead tr {
+  color: var(--mu);
+  text-align: left;
+}
+
+.table th {
+  padding: 12px 18px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.table td {
+  padding: 12px 18px;
+  border-top: 1px solid var(--bd);
+}
+
+.row {
+  cursor: pointer;
+}
+.row:hover td {
+  background: var(--soft);
+}
+
+.storeName {
+  font-weight: 700;
+}
+
+.storeCity {
+  font-size: 11px;
+  color: var(--mu);
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.mono {
+  font-weight: 700;
+  font-family: var(--font-mono);
+}
+
+.muted {
+  color: var(--mu);
+  font-weight: 600;
+  font-family: var(--font-mono);
+}

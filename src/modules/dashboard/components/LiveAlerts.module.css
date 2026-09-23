@@ -1,0 +1,81 @@
+.card {
+  padding: 16px 18px;
+}
+
+.title {
+  font-size: 14.5px;
+  font-weight: 800;
+}
+
+.sub {
+  font-size: 11.5px;
+  color: var(--mu);
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin-top: 14px;
+}
+
+.row {
+  display: flex;
+  gap: 11px;
+  padding: 10px 11px;
+  border: 1px solid var(--bd);
+  border-radius: 11px;
+  background: var(--soft);
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    border-color 0.15s ease;
+  text-align: left;
+  font-family: inherit;
+  width: 100%;
+  box-sizing: border-box;
+}
+.row:hover {
+  transform: translateX(3px);
+  border-color: var(--brand);
+}
+
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  margin-top: 5px;
+  flex: 0 0 7px;
+  animation: omPulse 2s ease-in-out infinite;
+}
+
+.body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.rowTitle {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--tx);
+}
+
+.detail {
+  font-size: 11.5px;
+  color: var(--mu);
+  font-weight: 500;
+  margin-top: 2px;
+  line-height: 1.4;
+}
+
+.ago {
+  font-size: 10.5px;
+  color: var(--mu);
+  font-weight: 600;
+  font-family: var(--font-mono);
+  flex: 0 0 auto;
+}

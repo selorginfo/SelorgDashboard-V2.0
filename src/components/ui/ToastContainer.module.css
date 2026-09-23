@@ -1,0 +1,36 @@
+.stack {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 120;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+}
+
+.toast {
+  background: var(--tx);
+  color: var(--bg);
+  padding: 11px 20px;
+  border-radius: 11px;
+  font-size: 12.5px;
+  font-weight: 700;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  animation: omToast 0.28s cubic-bezier(0.22, 0.8, 0.3, 1) both;
+  cursor: pointer;
+}
+
+.toast[data-tone="error"] {
+  background: var(--red-tx);
+  color: #fff;
+}
+.toast[data-tone="success"] {
+  background: var(--brand);
+  color: #fff;
+}
+.toast[data-tone="warning"] {
+  background: var(--amber-tx);
+  color: #fff;
+}

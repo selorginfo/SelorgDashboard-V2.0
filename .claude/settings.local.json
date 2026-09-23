@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm -v)",
+      "Bash(mkdir -p design-reference)",
+      "Bash(mv \"Selorg Admin Dashboard.dc.html\" support.js .thumbnail uploads design-reference/)",
+      "Bash(cd \"C:/js/selorgdashboard\" && mv uploads design-reference/ 2>&1; ls -la; ls -la design-reference)",
+      "Bash(npm create *)",
+      "Bash(npm install *)",
+      "Bash(npx tsc *)",
+      "Bash(npx vitest *)",
+      "Bash(npx eslint *)",
+      "Bash(npm run *)"
+    ]
+  }
+}

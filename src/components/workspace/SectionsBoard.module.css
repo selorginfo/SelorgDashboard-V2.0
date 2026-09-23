@@ -1,0 +1,163 @@
+.board {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.sidebar {
+  flex: 1 1 226px;
+  min-width: 210px;
+  max-width: 270px;
+  padding: 12px;
+}
+
+.sidebarTitle {
+  padding: 4px 8px 10px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--mu);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.sidebarList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sidebarItem {
+  padding: 10px 11px;
+  border: 1px solid var(--bd);
+  border-radius: 9px;
+  background: var(--card);
+  color: var(--tx);
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  transition: all 0.16s ease;
+}
+.sidebarItem[data-active="true"] {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: #fff;
+}
+
+.content {
+  flex: 3 1 380px;
+  min-width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.hint {
+  margin: 0;
+  font-size: 12px;
+  color: var(--mu);
+  font-weight: 600;
+  padding: 2px 2px 4px;
+}
+
+.row {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding: 15px 17px;
+}
+
+.rowIdentity {
+  flex: 1;
+  min-width: 180px;
+}
+
+.rowName {
+  font-size: 13.5px;
+  font-weight: 800;
+}
+
+.rowScope {
+  font-size: 11px;
+  color: var(--mu);
+  font-weight: 600;
+  margin-top: 3px;
+}
+
+.rowDetail {
+  font-size: 11px;
+  color: var(--mu);
+  font-weight: 600;
+  margin-top: 6px;
+  line-height: 1.5;
+}
+
+.rowValueCol {
+  flex: 0 0 auto;
+  text-align: right;
+}
+
+.rowValue {
+  font-size: 14px;
+  font-weight: 800;
+  font-family: var(--font-mono);
+}
+
+.rowUpdated {
+  font-size: 10.5px;
+  color: var(--mu);
+  font-weight: 600;
+  margin-top: 3px;
+}
+
+.rowActions {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex: 0 0 auto;
+}
+
+.rowStatus {
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 20px;
+  white-space: nowrap;
+  background: var(--soft);
+  color: var(--mu);
+}
+.rowStatus[data-tone="green"] {
+  background: var(--bsoft);
+  color: var(--brand);
+}
+.rowStatus[data-tone="amber"] {
+  background: var(--amber-bg);
+  color: var(--amber-tx);
+}
+.rowStatus[data-tone="red"] {
+  background: var(--red-bg);
+  color: var(--red-tx);
+}
+.rowStatus[data-tone="blue"] {
+  background: var(--blue-bg);
+  color: var(--blue-tx);
+}
+
+.configureBtn {
+  padding: 7px 12px;
+  border: 1px solid var(--bd);
+  border-radius: 9px;
+  background: var(--soft);
+  color: var(--tx);
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: border-color 0.14s ease;
+}
+.configureBtn:hover {
+  border-color: var(--brand);
+}

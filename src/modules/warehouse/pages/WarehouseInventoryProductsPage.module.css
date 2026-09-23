@@ -1,0 +1,76 @@
+.wrap { display: flex; flex-direction: column; gap: 14px; }
+
+.header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.title { font-size: 16px; font-weight: 800; margin: 0; }
+.subtitle { font-size: 12px; color: var(--mu); margin: 2px 0 0; }
+
+.warehouseBar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.warehouseSelect { padding: 7px 10px; border: 1px solid var(--bd); border-radius: 8px; background: var(--card); color: var(--tx); font-size: 13px; font-family: inherit; min-width: 220px; cursor: pointer; }
+.warehouseSelect:focus { outline: 2px solid var(--brand); outline-offset: 1px; }
+.totalCount { font-size: 12px; font-weight: 700; color: var(--mu); }
+
+.kpiRow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.kpiChip { display: flex; align-items: center; gap: 5px; padding: 5px 10px; border-radius: 20px; background: var(--soft); border: 1px solid var(--bd); font-size: 12px; }
+.kpiChip.kpiAmber { background: var(--amber-bg, #fffbeb); border-color: var(--amber, #f59e0b); color: var(--amber-tx, #92400e); }
+.kpiChip.kpiRed { background: var(--red-bg, #fef2f2); border-color: var(--red, #ef4444); color: var(--red-tx, #991b1b); }
+.kpiVal { font-weight: 800; font-family: var(--font-mono); font-size: 13px; }
+.kpiLabel { font-weight: 600; }
+
+.emptyCard { padding: 32px 20px; text-align: center; }
+.empty { font-size: 13px; color: var(--mu); margin: 0; }
+.error { font-size: 12px; color: var(--red-tx, #b91c1c); margin: 0; }
+
+.tableCard { padding: 0; overflow: hidden; }
+.table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.table thead tr { border-bottom: 1px solid var(--bd); background: var(--soft); }
+.table th { padding: 9px 12px; text-align: left; font-size: 10.5px; font-weight: 700; color: var(--mu); letter-spacing: 0.05em; text-transform: uppercase; white-space: nowrap; }
+.table td { padding: 10px 12px; border-bottom: 1px solid var(--bd); vertical-align: middle; }
+.table tbody tr:last-child td { border-bottom: none; }
+.table tbody tr:hover { background: var(--soft); }
+
+.productCell { display: flex; align-items: center; gap: 8px; }
+.productImg { width: 32px; height: 32px; border-radius: 6px; object-fit: cover; flex-shrink: 0; border: 1px solid var(--bd); }
+.productName { font-weight: 700; color: var(--tx); }
+.skuCell { font-family: var(--font-mono); font-size: 11.5px; color: var(--mu); }
+.priceCell { font-weight: 700; font-family: var(--font-mono); white-space: nowrap; }
+.sellingPrice { color: var(--mu); font-weight: 500; }
+
+.qtyValue { font-weight: 800; font-family: var(--font-mono); cursor: pointer; display: inline-flex; align-items: center; gap: 5px; padding: 2px 4px; border-radius: 4px; border: 1px solid transparent; }
+.qtyValue:hover { border-color: var(--bd); background: var(--soft); }
+.qtyValue.qtyOut { color: var(--red-tx, #b91c1c); }
+.qtyValue.qtyLow { color: var(--amber-tx, #92400e); }
+.qtyInput { width: 70px; padding: 4px 7px; border: 1px solid var(--brand); border-radius: 6px; font-size: 12.5px; font-family: var(--font-mono); background: var(--card); color: var(--tx); }
+.qtyInput:focus { outline: 2px solid var(--brand); outline-offset: 1px; }
+.stockTag { font-size: 9.5px; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; background: var(--red, #ef4444); color: #fff; border-radius: 4px; padding: 1px 5px; }
+.stockTagLow { font-size: 9.5px; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; background: var(--amber, #f59e0b); color: #fff; border-radius: 4px; padding: 1px 5px; }
+.muteCell { color: var(--mu); font-family: var(--font-mono); font-size: 12px; }
+
+.actionCell { display: flex; align-items: center; gap: 6px; }
+.deleteBtn { background: none; border: none; padding: 4px 6px; border-radius: 6px; cursor: pointer; color: var(--mu); display: flex; align-items: center; }
+.deleteBtn:hover { background: var(--red-bg, #fef2f2); color: var(--red-tx, #b91c1c); }
+.toggleBtn { background: none; border: none; padding: 0; cursor: pointer; }
+
+.form { display: flex; flex-direction: column; gap: 14px; }
+.label { display: flex; flex-direction: column; gap: 5px; font-size: 12px; font-weight: 700; color: var(--mu); letter-spacing: 0.04em; text-transform: uppercase; }
+.input { padding: 8px 10px; border: 1px solid var(--bd); border-radius: 8px; font-size: 13px; font-family: inherit; background: var(--card); color: var(--tx); width: 100%; box-sizing: border-box; }
+.input:focus { outline: 2px solid var(--brand); outline-offset: 1px; border-color: var(--brand); }
+
+.searchWrap { position: relative; }
+.searchIcon { position: absolute; left: 9px; top: 50%; transform: translateY(-50%); color: var(--mu); pointer-events: none; }
+.searchInput { width: 100%; box-sizing: border-box; padding: 7px 10px 7px 28px; border: 1px solid var(--bd); border-radius: 8px; font-size: 13px; font-family: inherit; background: var(--card); color: var(--tx); }
+.searchInput:focus { outline: 2px solid var(--brand); outline-offset: 1px; border-color: var(--brand); }
+
+.productList { border: 1px solid var(--bd); border-radius: 8px; max-height: 200px; overflow-y: auto; background: var(--card); }
+.listEmpty { padding: 14px 12px; font-size: 12px; color: var(--mu); text-align: center; }
+.productRow { display: flex; align-items: center; gap: 10px; width: 100%; padding: 8px 10px; text-align: left; background: none; border: none; border-bottom: 1px solid var(--bd); cursor: pointer; font-family: inherit; }
+.productRow:last-child { border-bottom: none; }
+.productRow:hover:not([data-disabled="true"]), .productRow[data-selected="true"] { background: var(--bsoft, #eff6ff); }
+.productRow[data-disabled="true"] { cursor: not-allowed; opacity: 0.55; }
+.alreadyTag { font-size: 10px; font-weight: 700; color: #ef4444; background: #fef2f2; border: 1px solid #fecaca; border-radius: 99px; padding: 2px 7px; white-space: nowrap; flex-shrink: 0; }
+.rowImg { width: 28px; height: 28px; border-radius: 5px; object-fit: cover; border: 1px solid var(--bd); flex-shrink: 0; }
+.rowName { font-size: 13px; font-weight: 700; color: var(--tx); }
+.rowMeta { font-size: 11px; color: var(--mu); font-family: var(--font-mono); }
+
+.formRow { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.checkLabel { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--tx); cursor: pointer; }
+.formActions { display: flex; justify-content: flex-end; gap: 8px; padding-top: 4px; }
