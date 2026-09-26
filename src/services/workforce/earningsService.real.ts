@@ -7,8 +7,15 @@ function extractList(res: unknown): Record<string, unknown>[] {
   if (Array.isArray(res)) return res as Record<string, unknown>[];
   if (!res || typeof res !== "object") return [];
   const r = res as Record<string, unknown>;
-  for (const k of ["data", "list", "items", "payouts", "withdrawals", "earnings"]) {
+  for (const k of ["data", "list", "items", "payouts", "withdrawals", "earnings", "requests", "rows", "payroll"]) {
     if (Array.isArray(r[k])) return r[k] as Record<string, unknown>[];
+  }
+  // Nested ResponseFormatter: { data: { rows|payroll|items } }
+  if (r.data && typeof r.data === "object") {
+    const d = r.data as Record<string, unknown>;
+    for (const k of ["rows", "payroll", "items", "list", "withdrawals", "requests"]) {
+      if (Array.isArray(d[k])) return d[k] as Record<string, unknown>[];
+    }
   }
   return [];
 }
@@ -43,14 +50,14 @@ function tabFor(status: Badge): string {
 
 function mapEarning(raw: Record<string, unknown>, kind: WorkerKind, index: number): WorkforceEarning {
   const status = statusBadge(raw.status ?? raw.payoutStatus);
-  const net = money(raw.net ?? raw.amount ?? raw.total ?? raw.payoutAmount ?? 0);
-  const base = money(raw.base ?? raw.baseAmount ?? raw.gross ?? 0);
-  const incentive = money(raw.incentive ?? raw.bonus ?? 0);
-  const deduction = money(raw.deduction ?? raw.deductions ?? 0);
+  const net = money(raw.net ?? raw.amount ?? raw.total ?? raw.finalSalary ?? raw.payoutAmount ?? 0);
+  const base = money(raw.base ?? raw.baseAmount ?? raw.gross ?? raw.monthlySalary ?? 0);
+  const incentive = money(raw.incentive ?? raw.bonus ?? raw.otEarnings ?? 0);
+  const deduction = money(raw.deduction ?? raw.deductions ?? raw.leaveDeduction ?? 0);
   return {
-    id: String(raw.id ?? raw._id ?? `earn-${index}`),
+    id: String(raw.id ?? raw._id ?? raw.pickerId ?? `earn-${index}`),
     kind,
-    ref: String(raw.ref ?? raw.reference ?? raw.payoutId ?? raw.id ?? `PAY-${index}`),
+    ref: String(raw.ref ?? raw.reference ?? raw.payoutId ?? raw.monthKey ?? raw.id ?? `PAY-${index}`),
     person: String(raw.person ?? raw.riderName ?? raw.pickerName ?? raw.name ?? raw.workerName ?? "—"),
     metrics:
       kind === "rider"
@@ -61,8 +68,8 @@ function mapEarning(raw: Record<string, unknown>, kind: WorkerKind, index: numbe
             { label: "Deduction", value: deduction },
           ]
         : [
-            { label: "Orders", value: String(raw.orders ?? raw.picks ?? raw.count ?? "0") },
-            { label: "Items", value: String(raw.items ?? "—") },
+            { label: "Orders", value: String(raw.orders ?? raw.picks ?? raw.paidDays ?? raw.count ?? "0") },
+            { label: "Items", value: String(raw.items ?? raw.unpaidLeave ?? "—") },
             { label: "Base", value: base },
             { label: "Incentive", value: incentive },
           ],
@@ -74,17 +81,38 @@ function mapEarning(raw: Record<string, unknown>, kind: WorkerKind, index: numbe
 
 export const realEarningsService: EarningsService = {
   async list(kind: WorkerKind): Promise<WorkforceEarning[]> {
-    const path =
-      kind === "rider" ? "/api/v1/admin/finance/rider-cash/payouts" : "/api/v1/admin/finance/picker-withdrawals";
-    const res = await api.get<unknown>(path);
-    return extractList(res).map((row, i) => mapEarning(row, kind, i));
+    if (kind === "rider") {
+      const res = await api.get<unknown>("/api/v1/admin/finance/rider-cash/payouts");
+      return extractList(res).map((row, i) => mapEarning(row, kind, i));
+    }
+    // Prefer real monthly salary/payroll ledger for picker KPIs (not empty withdrawals)
+    const payroll = await api.get<unknown>("/api/v1/admin/picker/payroll").catch(() => null);
+    const fromPayroll = extractList(payroll);
+    if (fromPayroll.length > 0) return fromPayroll.map((row, i) => mapEarning(row, kind, i));
+
+    const salary = await api.get<unknown>("/api/v1/admin/picker/salary").catch(() => null);
+    const fromSalary = extractList(salary);
+    if (fromSalary.length > 0) return fromSalary.map((row, i) => mapEarning(row, kind, i));
+
+    // Prefer real picker withdrawals collection; finance path also bridged
+    const primary = await api.get<unknown>("/api/v1/admin/picker/withdrawals").catch(() => null);
+    const fromPrimary = extractList(primary);
+    if (fromPrimary.length > 0) return fromPrimary.map((row, i) => mapEarning(row, kind, i));
+    const fallback = await api.get<unknown>("/api/v1/admin/finance/picker-withdrawals");
+    return extractList(fallback).map((row, i) => mapEarning(row, kind, i));
   },
 
   async approve(kind: WorkerKind, id: string): Promise<WorkforceEarning> {
-    if (kind === "picker") {
-      const res = await api.patch<Record<string, unknown>>(`/api/v1/admin/finance/picker-withdrawals/${id}`, {
-        action: "approve",
-      });
+    if (kind === "picker" || kind === "rider") {
+      const res = await api
+        .patch<Record<string, unknown>>(`/api/v1/admin/finance/picker-withdrawals/${id}`, {
+          action: "approve",
+        })
+        .catch(async () =>
+          api.post<Record<string, unknown>>(`/api/v1/admin/picker/withdrawals/${id}/process`, {
+            action: "APPROVED",
+          }),
+        );
       return mapEarning(res && typeof res === "object" ? res : { id, status: "approved" }, kind, 0);
     }
     const res = await api.post<Record<string, unknown>>(`/api/v1/admin/finance/approvals/${id}/decision`, {

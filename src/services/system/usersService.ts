@@ -7,6 +7,8 @@ export interface AdminUserInput {
   department?: string;
   roleId?: string;
   emailVerifiedToken?: string;
+  assignedStores?: string[];
+  primaryStoreId?: string;
 }
 
 export interface OtpSentResult {
@@ -42,6 +44,6 @@ export interface UsersService {
   sendOtp(email: string): Promise<OtpSentResult>;
   verifyOtp(email: string, otp: string, verificationRequestId: string): Promise<OtpVerifiedResult>;
   resetPassword(id: string, sendEmail?: boolean): Promise<PasswordResetResult>;
-  assignRole(id: string, roleId: string): Promise<SystemUser>;
+  assignRole(id: string, roleId: string, opts?: { assignedStores?: string[]; primaryStoreId?: string }): Promise<SystemUser>;
   update(id: string, input: UserUpdateInput): Promise<SystemUser>;
 }

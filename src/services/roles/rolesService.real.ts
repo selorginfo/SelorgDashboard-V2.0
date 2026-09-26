@@ -1,10 +1,15 @@
 import { api } from "@/lib/apiClient";
-import type { RolesService, ApiRole, RolesKpis, RoleUpdate } from "./rolesService";
+import type { RolesService, ApiRole, RolesKpis, RoleUpdate, CreateRoleInput } from "./rolesService";
 
 function extract(res: unknown): ApiRole[] {
   if (Array.isArray(res)) return res as ApiRole[];
   const r = res as Record<string, unknown>;
   return ((r["data"] ?? r["list"] ?? r["roles"] ?? []) as ApiRole[]);
+}
+
+function unwrapRole(res: unknown): ApiRole {
+  const root = res as Record<string, unknown>;
+  return ((root?.["data"] ?? root) as ApiRole);
 }
 
 export const realRolesService: RolesService = {
@@ -23,12 +28,25 @@ export const realRolesService: RolesService = {
     return { total, withRefundRights: 0, withApproveRights: 0, changesLast30d: 0, underReview };
   },
 
-  async createRole(input: RoleUpdate & { name: string }): Promise<ApiRole> {
-    return api.post<ApiRole>("/api/v1/admin/roles", input);
+  async createRole(input: CreateRoleInput): Promise<ApiRole> {
+    const res = await api.post<unknown>("/api/v1/admin/roles", {
+      name: input.name,
+      description: input.description,
+      accessScope: input.accessScope ?? "global",
+      permissions: input.permissions,
+    });
+    return unwrapRole(res);
   },
 
   async updateRole(id: string, input: RoleUpdate): Promise<ApiRole> {
-    return api.put<ApiRole>(`/api/v1/admin/roles/${id}`, input);
+    const res = await api.put<unknown>(`/api/v1/admin/roles/${id}`, {
+      name: input.name,
+      description: input.description,
+      accessScope: input.accessScope,
+      permissions: input.permissions,
+      isActive: input.status === "active" ? true : input.status === "inactive" ? false : undefined,
+    });
+    return unwrapRole(res);
   },
 
   async deleteRole(id: string): Promise<void> {
@@ -36,6 +54,7 @@ export const realRolesService: RolesService = {
   },
 
   async updateRoleMatrix(id: string, permissions: string[]): Promise<ApiRole> {
-    return api.put<ApiRole>(`/api/v1/admin/roles/${id}/matrix`, { permissions });
+    const res = await api.put<unknown>(`/api/v1/admin/roles/${id}/matrix`, { permissions });
+    return unwrapRole(res);
   },
 };

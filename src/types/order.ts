@@ -1,20 +1,13 @@
 import type { Tone } from "@/types/common";
 
-export const ORDER_STAGES = [
-  "Placed",
-  "Confirmed",
-  "Picking started",
-  "Picking completed",
-  "HSD verified",
-  "Packed",
-  "Ready",
-  "Rider assigned",
-  "Picked up",
-  "Out for delivery",
-  "Delivered",
-] as const;
-
 export type OrderStatus =
+  | "Placed"
+  | "Confirmed"
+  | "Waiting for Picker"
+  | "Picker Accepted"
+  | "Waiting for Rider"
+  | "Rider Accepted"
+  | "Rider Picked"
   | "Picking"
   | "Packing"
   | "Ready"
@@ -22,6 +15,20 @@ export type OrderStatus =
   | "Delivered"
   | "Exception"
   | "Cancelled";
+
+export const ORDER_STAGES = [
+  "Placed",
+  "Waiting for Picker",
+  "Picker Accepted",
+  "Picking completed",
+  "HSD verified",
+  "Packed",
+  "Waiting for Rider",
+  "Rider Accepted",
+  "Rider Picked",
+  "Out for delivery",
+  "Delivered",
+] as const;
 
 export type PaymentStatus = "Paid" | "Failed" | "COD" | "Pending";
 export type SlaStatus = "On track" | "At risk" | "Breached";
@@ -54,6 +61,8 @@ export interface Order {
   date: string;
   createdAt?: string; // ISO date-time from API, used for day-based client-side filtering
   status: OrderStatus;
+  fulfillmentStage?: string;
+  fulfillmentLabel?: string;
   tone: Tone;
   payment: PaymentStatus;
   paymentLabel?: string;
@@ -65,6 +74,9 @@ export interface Order {
   exception: string;
   stage: number;
   rawStatus?: string;
+  hsdDeviceId?: string;
+  bagCode?: string;
+  dispatchBay?: string;
   refundLine?: string;
   cancelLine?: string;
   items: OrderItem[];

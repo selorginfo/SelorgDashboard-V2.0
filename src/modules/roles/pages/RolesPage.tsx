@@ -4,12 +4,15 @@ import type { Role } from "@/types/auth";
 import { PERM_MODULES, PERM_COLS, PERM_GRID, ROLE_SCOPE, PERM_TOTAL, grantedCount } from "@/constants/permissionMatrix";
 import { KpiStrip } from "@/components/ui/KpiStrip";
 import { Card } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
+import { Dialog } from "@/components/ui/Dialog";
+import { Input, FieldLabel } from "@/components/ui/Input";
 import { PurposeBanner } from "@/components/workspace/PurposeBanner";
 import { ViewToggle, type ViewMode } from "@/components/workspace/ViewToggle";
 import { RecordsListTable } from "@/components/workspace/RecordsListTable";
 import { usePermission } from "@/hooks/usePermission";
-import { useRolesList, useRolesKpis, usePermissionsMatrix, useUpdateRoleMatrix } from "@/modules/roles/hooks/useRoles";
-import { roleToRow, roleId } from "@/services/roles/rolesService";
+import { useRolesList, useRolesKpis, usePermissionsMatrix, useUpdateRoleMatrix, useCreateRole } from "@/modules/roles/hooks/useRoles";
+import { roleToRow, roleId, ROLE_PERMISSION_PRESETS, type AccessScope } from "@/services/roles/rolesService";
 import type { ApiRole } from "@/services/roles/rolesService";
 import { collectActions, hasPermission, humanise, usesWildcards } from "@/services/roles/permissionsService";
 import { useUiStore } from "@/store/uiStore";
@@ -22,11 +25,6 @@ const FLOW = ["Role defined", "Modules selected", "Permissions set", "Reviewed",
 
 const ROLE_LIST_COLUMNS = ["Role", "Scope", "Users", "Modules", "Sensitive rights", "2FA", "Updated", "Status"];
 
-/**
- * Shown when the backend permission catalog can't be loaded. Without it there is nothing to
- * persist against — `PUT /admin/roles/:id/matrix` validates every key against the `Permission`
- * collection — so the screen falls back to the read-only design grid from `constants/permissionMatrix`.
- */
 const DESIGN_GRID_REASON =
   "Read-only: showing the approved design grid because the backend permission catalog is unavailable.";
 
@@ -43,6 +41,12 @@ const FALLBACK_ROWS: WorkspaceRow[] = [
   ["Catalog Manager", "Global", "1", "4", "Approve", "Optional", "24 Aug", { label: "Review", tone: "amber" }],
 ];
 
+const ACCESS_SCOPE_OPTIONS: { value: AccessScope; label: string; hint: string }[] = [
+  { value: "global", label: "Global", hint: "All warehouses and dark stores" },
+  { value: "zone", label: "Zone", hint: "Limited to a delivery zone / hub set" },
+  { value: "store", label: "Store", hint: "Only the dark store assigned to each user" },
+];
+
 export function RolesPage() {
   const [view, setView] = useState<ViewMode>("workspace");
   const { can } = usePermission();
@@ -52,24 +56,28 @@ export function RolesPage() {
   const { data: kpis } = useRolesKpis();
   const { data: matrix } = usePermissionsMatrix();
   const updateMatrix = useUpdateRoleMatrix();
+  const createRole = useCreateRole();
 
   const canEdit = can("roles", "edit");
   const liveRoles = apiRoles ?? [];
   const hasCatalog = Boolean(matrix && matrix.modules.length > 0);
 
-  // Selection is by backend role id when real roles exist, and by display name otherwise.
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [designRole, setDesignRole] = useState<Role>(ROLES[0]);
+  const [createOpen, setCreateOpen] = useState(false);
+  const [newName, setNewName] = useState("Dark Store Manager");
+  const [newDescription, setNewDescription] = useState(
+    "Manages a single assigned dark store — orders, picking, inventory and picker ops."
+  );
+  const [newScope, setNewScope] = useState<AccessScope>("store");
 
   const selectedRole: ApiRole | null = useMemo(() => {
     if (!liveRoles.length) return null;
     return liveRoles.find((r) => roleId(r) === selectedId) ?? liveRoles[0] ?? null;
   }, [liveRoles, selectedId]);
 
-  // Draft holds the permission keys being edited; null means "not editing".
   const [draft, setDraft] = useState<Set<string> | null>(null);
 
-  // Abandon an in-progress edit when the selected role changes, so edits can't leak across roles.
   useEffect(() => {
     setDraft(null);
   }, [selectedRole?.name]);
@@ -82,7 +90,6 @@ export function RolesPage() {
   const isSystemRole = selectedRole?.roleType === "system";
   const editable = hasCatalog && canEdit && !!selectedRole && !isSystemRole;
 
-  /** Effective grant for a permission key — draft while editing, otherwise the role's own keys. */
   function isGranted(name: string): boolean {
     if (draft) return draft.has(name);
     return hasPermission(grantedKeys, name);
@@ -90,8 +97,6 @@ export function RolesPage() {
 
   function beginEdit() {
     if (!selectedRole || !matrix) return;
-    // Wildcards can't round-trip through the matrix endpoint, so expand them into the explicit
-    // keys they currently cover. Warn first: saving then narrows the role to today's catalog.
     const expanded = new Set<string>();
     for (const mod of matrix.modules) {
       for (const perm of mod.permissions) {
@@ -136,6 +141,49 @@ export function RolesPage() {
     );
   }
 
+  function applyPresetName(name: string) {
+    setNewName(name);
+    if (name === "Dark Store Manager") {
+      setNewScope("store");
+      setNewDescription("Manages a single assigned dark store — orders, picking, inventory and picker ops.");
+    } else if (name === "Warehouse Manager") {
+      setNewScope("store");
+      setNewDescription("Manages central warehouse receiving, putaway and transfers.");
+    } else if (name === "Operations Admin") {
+      setNewScope("global");
+      setNewDescription("Cross-store operations admin with global access.");
+    }
+  }
+
+  function handleCreateRole() {
+    const name = newName.trim();
+    if (!name) {
+      pushToast("Role name is required", "error");
+      return;
+    }
+    const permissions =
+      ROLE_PERMISSION_PRESETS[name] ??
+      (newScope === "store"
+        ? ROLE_PERMISSION_PRESETS["Dark Store Manager"]
+        : ["orders.read", "analytics.reports.read"]);
+    createRole.mutate(
+      {
+        name,
+        description: newDescription.trim() || undefined,
+        accessScope: newScope,
+        permissions,
+      },
+      {
+        onSuccess: (role) => {
+          pushToast(`${role.name} created · scope ${role.scope ?? newScope}`, "success");
+          setCreateOpen(false);
+          setSelectedId(roleId(role));
+        },
+        onError: (e) => pushToast((e as Error).message || "Couldn't create role", "error"),
+      }
+    );
+  }
+
   const catalogGranted = useMemo(() => {
     if (!matrix) return 0;
     let n = 0;
@@ -152,7 +200,7 @@ export function RolesPage() {
 
   const headerName = hasCatalog && selectedRole ? selectedRole.name : designRole;
   const headerScope = hasCatalog && selectedRole
-    ? selectedRole.scope ?? "Global"
+    ? selectedRole.scope ?? (selectedRole.accessScope === "store" ? "Assigned store" : "Global")
     : ROLE_SCOPE[designRole];
 
   return (
@@ -173,6 +221,11 @@ export function RolesPage() {
 
       <div className={styles.headerRow}>
         <ViewToggle view={view} onChange={setView} />
+        {canEdit ? (
+          <Button variant="primary" size="sm" onClick={() => setCreateOpen(true)}>
+            + Create role
+          </Button>
+        ) : null}
       </div>
 
       {view === "list" ? (
@@ -205,6 +258,9 @@ export function RolesPage() {
                       onClick={() => setSelectedId(roleId(r))}
                     >
                       {r.name}
+                      {r.accessScope === "store" || (r.scope || "").toLowerCase().includes("store") ? (
+                        <span className={styles.scopeTag}>Store</span>
+                      ) : null}
                     </button>
                   ))
                 : ROLES.map((r) => (
@@ -287,7 +343,6 @@ export function RolesPage() {
                         <td className={styles.moduleCell}>{humanise(mod.module)}</td>
                         {actions.map((action) => {
                           const perm = mod.permissions.find((p) => (p.action || "view") === action);
-                          // No permission exists for this module/action pair — nothing to grant.
                           if (!perm) {
                             return (
                               <td key={action} className={styles.permCell}>
@@ -352,6 +407,63 @@ export function RolesPage() {
           </Card>
         </div>
       )}
+
+      <Dialog
+        open={createOpen}
+        onOpenChange={setCreateOpen}
+        title="Create role"
+        description="Pick a name and access scope. Store-scoped roles (like Dark Store Manager) only see the dark store assigned to each user."
+        footer={
+          <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
+            <Button size="sm" variant="secondary" onClick={() => setCreateOpen(false)} disabled={createRole.isPending}>
+              Cancel
+            </Button>
+            <Button size="sm" variant="primary" isLoading={createRole.isPending} onClick={handleCreateRole}>
+              Create role
+            </Button>
+          </div>
+        }
+      >
+        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+          <div>
+            <FieldLabel>Quick presets</FieldLabel>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 6 }}>
+              {["Dark Store Manager", "Warehouse Manager", "Operations Admin"].map((preset) => (
+                <Button key={preset} size="sm" variant="secondary" type="button" onClick={() => applyPresetName(preset)}>
+                  {preset}
+                </Button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <FieldLabel>Role name *</FieldLabel>
+            <Input value={newName} onChange={(e) => setNewName(e.target.value)} placeholder="e.g. Dark Store Manager" />
+          </div>
+          <div>
+            <FieldLabel>Description</FieldLabel>
+            <Input value={newDescription} onChange={(e) => setNewDescription(e.target.value)} placeholder="What this role can do" />
+          </div>
+          <div>
+            <FieldLabel>Access scope *</FieldLabel>
+            <select
+              value={newScope}
+              onChange={(e) => setNewScope(e.target.value as AccessScope)}
+              style={{ width: "100%", padding: "8px 10px", borderRadius: 6, border: "1px solid var(--border)", background: "var(--bg)", color: "var(--tx)", fontSize: "0.875rem" }}
+            >
+              {ACCESS_SCOPE_OPTIONS.map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label} — {o.hint}
+                </option>
+              ))}
+            </select>
+            {newScope === "store" ? (
+              <p style={{ margin: "8px 0 0", fontSize: 12, color: "var(--tx-muted)" }}>
+                When you create a user with this role, you must select which dark store they control.
+              </p>
+            ) : null}
+          </div>
+        </div>
+      </Dialog>
     </div>
   );
 }

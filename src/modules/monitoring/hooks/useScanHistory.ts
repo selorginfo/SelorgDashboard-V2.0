@@ -20,7 +20,18 @@ function inferEntity(type?: string, ref?: string): ScanHistoryEvent["entity"] {
 function extract(res: unknown): unknown[] {
   if (Array.isArray(res)) return res;
   const r = res as Record<string, unknown>;
-  return (r["data"] ?? r["list"] ?? r["logs"] ?? r["events"] ?? []) as unknown[];
+  const data = r["data"];
+  if (Array.isArray(data)) return data;
+  if (data && typeof data === "object") {
+    const d = data as Record<string, unknown>;
+    if (Array.isArray(d["logs"])) return d["logs"];
+    if (Array.isArray(d["list"])) return d["list"];
+    if (Array.isArray(d["events"])) return d["events"];
+  }
+  if (Array.isArray(r["logs"])) return r["logs"];
+  if (Array.isArray(r["list"])) return r["list"];
+  if (Array.isArray(r["events"])) return r["events"];
+  return [];
 }
 
 export function useScanHistory() {

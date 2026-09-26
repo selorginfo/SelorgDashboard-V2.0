@@ -37,27 +37,87 @@ function mapContent(raw: Record<string, unknown>, index = 0): ContentItem {
   };
 }
 
+function mapBanner(raw: Record<string, unknown>, index = 0): ContentItem {
+  const isActive = raw["isActive"] !== false;
+  const slot = String(raw["slot"] ?? "hero");
+  const redirectType = String(raw["redirectType"] ?? "");
+  const redirectValue = String(raw["redirectValue"] ?? "");
+  const placement =
+    slot === "hero"
+      ? `Home · hero`
+      : slot === "mid"
+        ? `Home · mid`
+        : `Home · ${slot}`;
+  const schedule = isActive ? "Live" : "Inactive";
+  return {
+    id: String(raw["_id"] ?? raw["id"] ?? `banner-${index}`),
+    title: String(raw["title"] ?? "Untitled banner"),
+    type: slot === "hero" ? "Hero banner" : "Strip banner",
+    placement,
+    surface: "Customer app",
+    author: String(raw["createdBy"] ?? "Admin"),
+    schedule: redirectType && redirectValue ? `${schedule} → ${redirectType}:${redirectValue}` : schedule,
+    updated: raw["updatedAt"]
+      ? new Date(String(raw["updatedAt"])).toLocaleDateString("en-IN", { day: "2-digit", month: "short" })
+      : "—",
+    stage: isActive ? "Published" : "Archived",
+  };
+}
+
+function unwrapList(res: unknown): Record<string, unknown>[] {
+  if (Array.isArray(res)) return res as Record<string, unknown>[];
+  const r = res as { list?: Record<string, unknown>[]; pages?: Record<string, unknown>[]; data?: Record<string, unknown>[] };
+  return r.list ?? r.pages ?? (Array.isArray(r.data) ? r.data : []);
+}
+
 export const realContentService: ContentService = {
   async list(): Promise<ContentItem[]> {
-    const res = await api.get<unknown>("/api/v1/customer/admin/cms/pages");
-    if (Array.isArray(res)) return (res as Record<string, unknown>[]).map((row, i) => mapContent(row, i));
-    const r = res as { list?: Record<string, unknown>[]; pages?: Record<string, unknown>[]; data?: Record<string, unknown>[] };
-    const list = r.list ?? r.pages ?? (Array.isArray(r.data) ? r.data : []);
-    return list.map((row, i) => mapContent(row, i));
+    // Pages + banners from the real backend — never seed/mock fixtures.
+    const [pagesRes, bannersRes] = await Promise.allSettled([
+      api.get<unknown>("/api/v1/customer/admin/cms/pages"),
+      api.get<unknown>("/api/v1/customer/admin/banners"),
+    ]);
+    const pages =
+      pagesRes.status === "fulfilled" ? unwrapList(pagesRes.value).map((row, i) => mapContent(row, i)) : [];
+    const banners =
+      bannersRes.status === "fulfilled" ? unwrapList(bannersRes.value).map((row, i) => mapBanner(row, i)) : [];
+    return [...banners, ...pages];
   },
 
   async setStage(id: string, stage: ContentStage): Promise<ContentItem> {
-    const status = stage === "Published" ? "published" : "draft";
-    const res = await api.put<unknown>(`/api/v1/customer/admin/cms/pages/${id}`, {
-      stage,
-      status,
-    });
-    const root = res as Record<string, unknown>;
-    const mapped = mapContent((root["data"] ?? root) as Record<string, unknown>);
-    return { ...mapped, stage: mapped.stage || stage };
+    // Banner ids are Mongo ObjectIds from /banners; page stage updates go to CMS pages.
+    // Prefer page update; if 404, treat as banner activate/deactivate.
+    try {
+      const status = stage === "Published" ? "published" : stage === "Archived" ? "archived" : "draft";
+      const res = await api.put<unknown>(`/api/v1/customer/admin/cms/pages/${id}`, {
+        stage,
+        status,
+      });
+      const root = res as Record<string, unknown>;
+      const mapped = mapContent((root["data"] ?? root) as Record<string, unknown>);
+      return { ...mapped, stage: mapped.stage || stage };
+    } catch {
+      const isActive = stage === "Published" || stage === "Scheduled" || stage === "Approved";
+      const res = await api.put<unknown>(`/api/v1/customer/admin/banners/${id}`, { isActive });
+      const root = res as Record<string, unknown>;
+      return mapBanner((root["data"] ?? root) as Record<string, unknown>);
+    }
   },
 
   async create(input: CreateContentInput): Promise<ContentItem> {
+    const isBanner = /banner/i.test(input.type || "");
+    if (isBanner) {
+      const res = await api.post<unknown>("/api/v1/customer/admin/banners", {
+        title: input.title,
+        slot: "hero",
+        isActive: false,
+        redirectType: "none",
+        redirectValue: "",
+        imageUrl: "",
+      });
+      const root = res as Record<string, unknown>;
+      return mapBanner((root["data"] ?? root) as Record<string, unknown>);
+    }
     const slug = `${input.title
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "-")

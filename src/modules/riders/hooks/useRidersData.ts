@@ -13,6 +13,30 @@ export function useRidersStats() {
   return useQuery({ queryKey: ["riders-stats"], queryFn: () => ridersService.getStats(), staleTime: 30_000 });
 }
 
+export function useRiderPerformance() {
+  return useQuery({
+    queryKey: ["riders-performance"],
+    queryFn: () => ridersService.listPerformance(),
+    staleTime: 60_000,
+  });
+}
+
+export function useRiderEarningsTab() {
+  return useQuery({
+    queryKey: ["riders-earnings-tab"],
+    queryFn: () => ridersService.listEarnings(),
+    staleTime: 60_000,
+  });
+}
+
+export function useRiderIncidentsTab() {
+  return useQuery({
+    queryKey: ["riders-incidents-tab"],
+    queryFn: () => ridersService.listIncidents(),
+    staleTime: 30_000,
+  });
+}
+
 export function useAssignRiderOrder() {
   const queryClient = useQueryClient();
   return useMutation({
@@ -45,6 +69,7 @@ export function useRaiseRiderIncident() {
       ridersService.raiseIncident(input),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["riders-live"] });
+      queryClient.invalidateQueries({ queryKey: ["riders-incidents-tab"] });
     },
   });
 }

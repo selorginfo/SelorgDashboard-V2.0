@@ -47,7 +47,17 @@ export function useResetUserPassword() {
 export function useAssignUserRole() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, roleId }: { id: string; roleId: string }) => usersService.assignRole(id, roleId),
+    mutationFn: ({
+      id,
+      roleId,
+      assignedStores,
+      primaryStoreId,
+    }: {
+      id: string;
+      roleId: string;
+      assignedStores?: string[];
+      primaryStoreId?: string;
+    }) => usersService.assignRole(id, roleId, { assignedStores, primaryStoreId }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: KEY }),
   });
 }

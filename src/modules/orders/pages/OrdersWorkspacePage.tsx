@@ -18,7 +18,7 @@ import { useUiStore } from "@/store/uiStore";
 import type { OrderActionId } from "@/types/order";
 import styles from "./OrdersWorkspacePage.module.css";
 
-const FILTERS = ["All", "Picking", "Packing", "Ready", "Out for delivery", "Delivered", "Exception"] as const;
+const FILTERS = ["All", "Placed", "Confirmed", "Picking", "Packing", "Ready", "Out for delivery", "Delivered", "Exception"] as const;
 
 function todayIso(): string {
   return new Date().toISOString().slice(0, 10);
@@ -29,7 +29,7 @@ export function OrdersWorkspacePage() {
   const navigate = useNavigate();
   // `?q=` lets other modules deep-link into a filtered queue (e.g. "View orders" on a customer).
   const [searchParams] = useSearchParams();
-  const [date, setDate] = useState(todayIso());
+  const [date, setDate] = useState("");
   const { data: orders, isLoading, isError, refetch } = useOrders(date);
   const [filter, setFilter] = useState<(typeof FILTERS)[number]>("All");
   const [query, setQuery] = useState(searchParams.get("q") ?? "");

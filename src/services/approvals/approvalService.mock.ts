@@ -31,6 +31,9 @@ export const mockApprovalService: ApprovalService = {
 
   async decide(kind, id, decision, note) {
     await mockDelay(300);
+    if (decision === "Reject" && !String(note || "").trim()) {
+      throw new MockApiError("A rejection reason is required");
+    }
     const application = tableFor(kind).all().find((a) => a.id === id);
     if (!application) throw new MockApiError(`Application ${id} not found`);
     const status =
@@ -39,7 +42,7 @@ export const mockApprovalService: ApprovalService = {
         : decision === "Reject"
           ? { label: "Rejected", tone: "grey" as const }
           : decision === "Start review"
-            ? { label: "Under review", tone: "amber" as const }
+            ? { label: "Interview", tone: "amber" as const }
             : { label: "Documents required", tone: "red" as const };
     const notes = note ? [...application.notes, note] : application.notes;
     return updateApplication(kind, id, { status, notes });
@@ -47,6 +50,33 @@ export const mockApprovalService: ApprovalService = {
 
   async assignReviewer(kind, id, reviewer) {
     await mockDelay(220);
-    return updateApplication(kind, id, { reviewer, status: { label: "Under review", tone: "amber" } });
+    return updateApplication(kind, id, { reviewer, status: { label: "Interview", tone: "amber" } });
+  },
+
+  async getDocuments(kind, id) {
+    await mockDelay(120);
+    return tableFor(kind).all().find((a) => a.id === id)?.documents ?? [];
+  },
+
+  async reviewDocument(kind, documentId, status, rejectionReason) {
+    await mockDelay(200);
+    if (status === "rejected" && !String(rejectionReason || "").trim()) {
+      throw new MockApiError("A rejection reason is required");
+    }
+    const table = tableFor(kind);
+    table.update((rows) =>
+      rows.map((a) => ({
+        ...a,
+        documents: (a.documents || []).map((d) =>
+          d.id === documentId
+            ? {
+                ...d,
+                status,
+                rejectionReason: status === "rejected" ? rejectionReason : null,
+              }
+            : d,
+        ),
+      })),
+    );
   },
 };

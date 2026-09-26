@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
-import { UserX, UserCheck } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { UserX, UserCheck, ExternalLink } from "lucide-react";
 import { useDirectory, useSetPersonStatus } from "@/modules/workforce/hooks/useDirectory";
 import { WORKFORCE_CONFIGS } from "@/services/workspace/data/workforce";
 import { KpiStrip } from "@/components/ui/KpiStrip";
@@ -17,6 +18,10 @@ import type { ModuleId } from "@/constants/nav";
 import styles from "./DirectoryWorkspacePage.module.css";
 
 const MODULE_BY_KIND: Record<WorkerKind, ModuleId> = { rider: "rider-dir", picker: "picker-dir" };
+const DETAILS_PATH: Record<WorkerKind, string> = {
+  rider: "/rider-details",
+  picker: "/picker-details",
+};
 const REACTIVATE_TAB: Record<WorkerKind, string> = { rider: "Available", picker: "Available" };
 const DEFAULT_TABS: Record<WorkerKind, string[]> = {
   rider: ["All riders", "Available", "On delivery", "Offline", "Suspended"],
@@ -24,6 +29,7 @@ const DEFAULT_TABS: Record<WorkerKind, string[]> = {
 };
 
 export function DirectoryWorkspacePage({ kind }: { kind: WorkerKind }) {
+  const navigate = useNavigate();
   const moduleId = MODULE_BY_KIND[kind];
   const config = WORKFORCE_CONFIGS[moduleId];
   const { data: people, isLoading, isError, refetch } = useDirectory(kind);
@@ -73,6 +79,10 @@ export function DirectoryWorkspacePage({ kind }: { kind: WorkerKind }) {
 
   const canEdit = can(moduleId, "edit");
 
+  function openDetails(person: WorkforcePerson) {
+    navigate(`${DETAILS_PATH[kind]}/${person.id}`);
+  }
+
   function toggleSuspend(person: WorkforcePerson) {
     const suspending = person.status.label !== "Suspended";
     setStatus.mutate(
@@ -117,7 +127,19 @@ export function DirectoryWorkspacePage({ kind }: { kind: WorkerKind }) {
       ) : (
         <div className={styles.grid}>
           {filtered.map((person) => (
-            <Card key={person.id} className={styles.card}>
+            <Card
+              key={person.id}
+              className={styles.card}
+              role="button"
+              tabIndex={0}
+              onClick={() => openDetails(person)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  openDetails(person);
+                }
+              }}
+            >
               <div className={styles.cardHeader}>
                 <div>
                   <div className={styles.name}>{person.name}</div>
@@ -142,8 +164,11 @@ export function DirectoryWorkspacePage({ kind }: { kind: WorkerKind }) {
                 ))}
               </div>
 
-              {canEdit ? (
-                <div className={styles.actionsRow}>
+              <div className={styles.actionsRow} onClick={(e) => e.stopPropagation()}>
+                <Button size="sm" variant="ghost" onClick={() => openDetails(person)}>
+                  <ExternalLink size={13} /> View details
+                </Button>
+                {canEdit ? (
                   <Button
                     size="sm"
                     variant={person.status?.label === "Suspended" ? "primary" : "danger"}
@@ -160,8 +185,8 @@ export function DirectoryWorkspacePage({ kind }: { kind: WorkerKind }) {
                       </>
                     )}
                   </Button>
-                </div>
-              ) : null}
+                ) : null}
+              </div>
             </Card>
           ))}
         </div>

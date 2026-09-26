@@ -50,8 +50,16 @@ export const realUsersService: UsersService = {
     return data;
   },
 
-  async assignRole(id: string, roleId: string): Promise<SystemUser> {
-    const res = await api.put<unknown>(`/api/v1/admin/users/${id}/role`, { roleId });
+  async assignRole(
+    id: string,
+    roleId: string,
+    opts?: { assignedStores?: string[]; primaryStoreId?: string }
+  ): Promise<SystemUser> {
+    const res = await api.put<unknown>(`/api/v1/admin/users/${id}/role`, {
+      roleId,
+      assignedStores: opts?.assignedStores,
+      primaryStoreId: opts?.primaryStoreId,
+    });
     return unwrapUser(res);
   },
 

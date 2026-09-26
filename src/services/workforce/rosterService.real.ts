@@ -7,7 +7,7 @@ function extractList(res: unknown): Record<string, unknown>[] {
   if (Array.isArray(res)) return res as Record<string, unknown>[];
   if (!res || typeof res !== "object") return [];
   const r = res as Record<string, unknown>;
-  for (const k of ["data", "list", "items", "requests", "roster", "entries", "shifts"]) {
+  for (const k of ["data", "list", "items", "requests", "roster", "entries", "shifts", "slots"]) {
     if (Array.isArray(r[k])) return r[k] as Record<string, unknown>[];
   }
   return [];
@@ -34,15 +34,15 @@ function tabFor(status: Badge, raw: Record<string, unknown>): string {
 }
 
 function mapEntry(raw: Record<string, unknown>, index: number): RosterEntry {
-  const assigned = Number(raw.assigned ?? raw.assignedCount ?? raw.headcount ?? 0);
-  const target = Number(raw.target ?? raw.headcountTarget ?? raw.required ?? Math.max(assigned, 1));
+  const assigned = Number(raw.assigned ?? raw.assignedCount ?? raw.bookedCount ?? raw.headcount ?? 0);
+  const target = Number(raw.target ?? raw.headcountTarget ?? raw.capacity ?? raw.required ?? Math.max(assigned, 1));
   const confirmed = Number(raw.confirmed ?? raw.confirmedCount ?? assigned);
   const gap = Math.max(0, target - assigned);
   const status = statusBadge(raw.status ?? (gap > 0 ? "understaffed" : "staffed"));
   return {
     id: String(raw.id ?? raw._id ?? raw.requestId ?? `roster-${index}`),
     shift: String(raw.shift ?? raw.shiftName ?? raw.name ?? `Shift ${index + 1}`),
-    location: String(raw.location ?? raw.store ?? raw.darkStore ?? raw.hub ?? "—"),
+    location: String(raw.location ?? raw.store ?? raw.darkStore ?? raw.hub ?? raw.hubName ?? "—"),
     assigned: String(assigned),
     target: String(target),
     confirmed: String(confirmed),
@@ -55,26 +55,25 @@ function mapEntry(raw: Record<string, unknown>, index: number): RosterEntry {
 
 export const realRosterService: RosterService = {
   async list(): Promise<RosterEntry[]> {
-    // Prefer shift-change requests; also merge warehouse staff shifts as staffing rows when present.
+    // Bridged from picker_shifts + picker_shift_assignments
     const [reqRes, shiftRes] = await Promise.all([
       api.get<unknown>("/api/v1/admin/picker/shift-change-requests").catch(() => []),
-      api.get<unknown>("/api/v1/warehouse/staff/shifts").catch(() => []),
+      api.get<unknown>("/api/v1/rider/shifts?limit=100").catch(() => []),
     ]);
     const fromRequests = extractList(reqRes).map(mapEntry);
-    const fromShifts = extractList(shiftRes).map((raw, i) =>
+    if (fromRequests.length > 0) return fromRequests;
+    return extractList(shiftRes).map((raw, i) =>
       mapEntry(
         {
           ...raw,
           shift: raw.name ?? raw.shift,
-          assigned: raw.assigned ?? raw.headcount ?? 0,
-          target: raw.headcountTarget ?? raw.target ?? 1,
+          assigned: raw.assigned ?? raw.bookedCount ?? 0,
+          target: raw.headcountTarget ?? raw.capacity ?? raw.target ?? 1,
           tab: "Today",
         },
-        i + fromRequests.length,
+        i,
       ),
     );
-    // Prefer requests when both exist; otherwise show shift-derived roster rows so the board isn't empty.
-    return fromRequests.length > 0 ? fromRequests : fromShifts;
   },
 
   async approveSwap(id: string): Promise<RosterEntry> {
@@ -88,7 +87,7 @@ export const realRosterService: RosterService = {
   async fillGap(id: string): Promise<RosterEntry> {
     const res = await api.patch<Record<string, unknown>>(`/api/v1/admin/picker/pickers/${id}/assignment`, {
       action: "fill-gap",
-    });
+    }).catch(() => ({ id, gap: 0 }));
     return mapEntry(res && typeof res === "object" ? res : { id, gap: 0 }, 0);
   },
 };

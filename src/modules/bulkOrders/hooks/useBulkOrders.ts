@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { bulkOrderService } from "@/services/bulkOrders/bulkOrderService";
+import { bulkOrderService } from "@/services/bulkOrders";
 import { useSessionStore } from "@/store/sessionStore";
 import type { AdminUser } from "@/types/auth";
 import type { BulkOrderStatus, BulkPaymentStatus, CreateBulkOrderInput } from "@/types/bulkOrder";

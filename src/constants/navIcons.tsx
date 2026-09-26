@@ -81,6 +81,12 @@ import {
   Award,
   Banknote,
   ChartNetwork,
+  UserRoundSearch,
+  ContactRound,
+  IndianRupee,
+  Waypoints,
+  Star,
+  TabletSmartphone,
 } from "lucide-react";
 import type { ComponentType } from "react";
 import type { ModuleId } from "@/constants/nav";
@@ -158,6 +164,8 @@ export const NAV_ICONS: Record<ModuleId, IconComponent> = {
   "picker-approvals": UserCheck,
   "rider-dir": UserCog,
   "picker-dir": UserCog,
+  "rider-details": UserRoundSearch,
+  "picker-details": ContactRound,
   "rider-earn": BadgeIndianRupee,
   "picker-earn": BadgeIndianRupee,
   "earn-rules": ScrollText,
@@ -167,6 +175,10 @@ export const NAV_ICONS: Record<ModuleId, IconComponent> = {
   "rider-support": MessageCircleWarning,
   "picker-support": MessageCircleWarning,
   exceptions: TriangleAlert,
+  "cod-collection": IndianRupee,
+  "order-progress": Waypoints,
+  "customer-reviews": Star,
+  "hsd-devices": TabletSmartphone,
   scanner: ScanBarcode,
   barcodes: QrCode,
   notifications: Bell,

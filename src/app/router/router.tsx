@@ -209,6 +209,24 @@ const OpsModulePage = lazy(() =>
 const BulkOrdersPage = lazy(() =>
   import("@/modules/bulkOrders/pages/BulkOrdersPage").then((m) => ({ default: m.BulkOrdersPage }))
 );
+const RiderDetailsPage = lazy(() =>
+  import("@/modules/opsAdmin/pages/WorkerDetailsPage").then((m) => ({ default: m.RiderDetailsPage }))
+);
+const PickerDetailsPage = lazy(() =>
+  import("@/modules/opsAdmin/pages/WorkerDetailsPage").then((m) => ({ default: m.PickerDetailsPage }))
+);
+const CodCollectionPage = lazy(() =>
+  import("@/modules/opsAdmin/pages/CodCollectionPage").then((m) => ({ default: m.CodCollectionPage }))
+);
+const OrderProgressPage = lazy(() =>
+  import("@/modules/opsAdmin/pages/OrderProgressPage").then((m) => ({ default: m.OrderProgressPage }))
+);
+const CustomerReviewsPage = lazy(() =>
+  import("@/modules/opsAdmin/pages/CustomerReviewsPage").then((m) => ({ default: m.CustomerReviewsPage }))
+);
+const HsdDevicesPage = lazy(() =>
+  import("@/modules/opsAdmin/pages/HsdDevicesPage").then((m) => ({ default: m.HsdDevicesPage }))
+);
 
 /**
  * Routes with a real page built so far — every other ModuleId falls back to the placeholder.
@@ -288,11 +306,21 @@ const BUILT_PAGES: Partial<Record<ModuleId, ComponentType>> = {
   "rpt-customer": CustomerReportPage,
   "api-catalog": ApiCatalogPage,
   "bulk-orders": BulkOrdersPage,
+  "rider-details": RiderDetailsPage,
+  "picker-details": PickerDetailsPage,
+  "cod-collection": CodCollectionPage,
+  "order-progress": OrderProgressPage,
+  "customer-reviews": CustomerReviewsPage,
+  "hsd-devices": HsdDevicesPage,
 };
 
 /** "orders"/"order-detail" get explicit nested routes below (list + direct-URL detail, request §9). */
 const ALL_MODULE_IDS = (Object.keys(MODULE_BREADCRUMBS) as ModuleId[]).filter(
-  (id) => id !== "orders" && id !== "order-detail"
+  (id) =>
+    id !== "orders" &&
+    id !== "order-detail" &&
+    id !== "rider-details" &&
+    id !== "picker-details"
 );
 
 export const router = createBrowserRouter([
@@ -318,6 +346,38 @@ export const router = createBrowserRouter([
             element: (
               <RequireModule moduleId="orders">
                 <OrdersWorkspacePage />
+              </RequireModule>
+            ),
+          },
+          {
+            path: "rider-details",
+            element: (
+              <RequireModule moduleId="rider-details">
+                <RiderDetailsPage />
+              </RequireModule>
+            ),
+          },
+          {
+            path: "rider-details/:id",
+            element: (
+              <RequireModule moduleId="rider-details">
+                <RiderDetailsPage />
+              </RequireModule>
+            ),
+          },
+          {
+            path: "picker-details",
+            element: (
+              <RequireModule moduleId="picker-details">
+                <PickerDetailsPage />
+              </RequireModule>
+            ),
+          },
+          {
+            path: "picker-details/:id",
+            element: (
+              <RequireModule moduleId="picker-details">
+                <PickerDetailsPage />
               </RequireModule>
             ),
           },

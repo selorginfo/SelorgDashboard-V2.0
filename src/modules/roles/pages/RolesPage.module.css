@@ -8,6 +8,7 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  gap: 10px;
 }
 
 .board {
@@ -50,11 +51,30 @@
   font-family: inherit;
   text-align: left;
   transition: all 0.16s ease;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
 }
 .roleItem[data-active="true"] {
   background: var(--brand);
   border-color: var(--brand);
   color: #fff;
+}
+
+.scopeTag {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.08);
+  color: inherit;
+  opacity: 0.85;
+}
+.roleItem[data-active="true"] .scopeTag {
+  background: rgba(255, 255, 255, 0.22);
 }
 
 .matrixCard {

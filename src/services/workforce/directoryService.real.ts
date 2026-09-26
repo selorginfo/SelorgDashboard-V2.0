@@ -14,21 +14,33 @@ function extractList(res: unknown): Record<string, unknown>[] {
   for (const k of ["data", "list", "items", "riders", "pickers"]) {
     if (Array.isArray(r[k])) return r[k] as Record<string, unknown>[];
   }
+  if (r.data && typeof r.data === "object") {
+    const d = r.data as Record<string, unknown>;
+    for (const k of ["pickers", "list", "items", "riders"]) {
+      if (Array.isArray(d[k])) return d[k] as Record<string, unknown>[];
+    }
+  }
   return [];
 }
 
 function statusBadge(raw: unknown): Badge {
   if (raw && typeof raw === "object" && "label" in (raw as object)) return raw as Badge;
-  const s = String(raw ?? "available").toLowerCase();
-  if (s.includes("suspend")) return { label: "Suspended", tone: "red" };
+  const s = String(raw ?? "").toLowerCase();
+  if (s.includes("suspend") || s === "inactive" || s === "blocked") return { label: "Suspended", tone: "red" };
   if (s.includes("deliver") || s.includes("on_delivery") || s === "busy") return { label: "On delivery", tone: "blue" };
-  if (s.includes("shift") || s.includes("picking")) return { label: "On shift", tone: "blue" };
-  if (s.includes("offline") || s.includes("inactive")) return { label: "Offline", tone: "grey" };
+  if (s.includes("on_shift") || s === "picking" || (s.includes("shift") && !s.includes("off"))) {
+    return { label: "On shift", tone: "blue" };
+  }
+  if (s.includes("offline") || s.includes("inactive") || s === "pending" || s === "rejected") {
+    return { label: "Offline", tone: "grey" };
+  }
   if (s.includes("delay")) return { label: "Delayed", tone: "red" };
-  if (s.includes("approv") || s.includes("active") || s.includes("available") || s.includes("online")) {
+  if (s.includes("available") || s.includes("online") || s === "idle") {
     return { label: "Available", tone: "green" };
   }
-  return { label: "Available", tone: "green" };
+  // Do not default ACTIVE account status to Available — that requires an active shift.
+  if (s.includes("active") || s.includes("approv")) return { label: "Offline", tone: "grey" };
+  return { label: "Offline", tone: "grey" };
 }
 
 function tabFor(status: Badge, kind: WorkerKind): string {
@@ -41,20 +53,69 @@ function tabFor(status: Badge, kind: WorkerKind): string {
 }
 
 function mapPerson(raw: Record<string, unknown>, kind: WorkerKind, index: number): WorkforcePerson {
-  const status = statusBadge(raw.status ?? raw.workStatus ?? raw.onlineStatus);
+  let status: Badge;
+
+  if (kind === "rider") {
+    const liveOrStatus = raw.onlineStatus ?? raw.workStatus ?? raw.status;
+    status = statusBadge(
+      raw.isOnline === false && String(raw.status).toUpperCase() === "ACTIVE" ? "offline" : liveOrStatus ?? raw.status,
+    );
+    if (raw.isOnline === true && !raw.activeOrderId && !raw.currentOrderId) {
+      status = { label: "Available", tone: "green" };
+    } else if (raw.activeOrderId || raw.currentOrderId) {
+      status = { label: "On delivery", tone: "blue" };
+    }
+  } else {
+    // Pickers: trust backend workStatus (Available only while on an active shift).
+    const account = String(raw.status ?? "").toUpperCase();
+    const ws = String(raw.workStatus ?? raw.onlineStatus ?? "").toLowerCase();
+    if (account === "SUSPENDED" || account === "INACTIVE" || account === "BLOCKED" || ws === "suspended") {
+      status = { label: "Suspended", tone: "red" };
+    } else if (ws === "available") {
+      status = { label: "Available", tone: "green" };
+    } else if (ws === "on_shift") {
+      status = { label: "On shift", tone: "blue" };
+    } else if (
+      (Boolean(raw.activeShiftId) || raw.onShift === true) &&
+      raw.isOnline === true &&
+      !raw.activeOrderId &&
+      !raw.onBreak
+    ) {
+      status = { label: "Available", tone: "green" };
+    } else if ((Boolean(raw.activeShiftId) || raw.onShift === true) && raw.isOnline === true) {
+      status = { label: "On shift", tone: "blue" };
+    } else {
+      status = { label: "Offline", tone: "grey" };
+    }
+  }
+
   const name = String(raw.name ?? raw.fullName ?? raw.riderName ?? raw.pickerName ?? `Worker ${index + 1}`);
+  // Prefer Mongo ObjectId for actions — never short employee / slice(-4) profile ids
+  const mongoId = String(raw._id ?? raw.id ?? `${kind}-${index}`);
+  const store =
+    kind === "picker"
+      ? String(
+          raw.darkStore ??
+            raw.store ??
+            raw.hub ??
+            raw.currentLocationId ??
+            raw.assignedStore ??
+            raw.location ??
+            "—",
+        )
+      : String(raw.location ?? raw.zone ?? raw.darkStore ?? raw.store ?? raw.hub ?? "—");
   return {
-    id: String(raw.id ?? raw._id ?? `${kind}-${index}`),
+    id: mongoId,
     kind,
     name,
     locationLabel: kind === "rider" ? "Zone" : "Store",
-    location: String(raw.location ?? raw.zone ?? raw.darkStore ?? raw.store ?? raw.hub ?? "—"),
+    location: store || "—",
     contactLabel: "Phone",
     contact: String(raw.phone ?? raw.mobile ?? raw.contact ?? "—"),
     vehicle: kind === "rider" ? String(raw.vehicle ?? raw.vehicleType ?? "") || undefined : undefined,
     stats: [
-      { label: kind === "rider" ? "Deliveries" : "Orders", value: String(raw.deliveriesToday ?? raw.ordersToday ?? raw.orders ?? "0") },
-      { label: kind === "rider" ? "On-time" : "Accuracy", value: String(raw.onTime ?? raw.accuracy ?? "—") },
+      { label: kind === "rider" ? "Deliveries" : "Orders", value: String(raw.deliveriesToday ?? raw.ordersToday ?? raw.orders ?? raw.deliveriesCount ?? raw.totalDeliveries ?? "0") },
+      { label: kind === "rider" ? "On-time" : "Accuracy", value: String(raw.onTime ?? raw.onTimeRate ?? raw.accuracy ?? "—") },
       { label: "Rating", value: String(raw.rating ?? raw.avgRating ?? "—") },
     ],
     status,

@@ -1,4 +1,5 @@
 import type { LiveRider, RiderDirectoryEntry } from "@/types/rider";
+import type { Badge } from "@/types/common";
 
 export interface RiderStats {
   online: number;
@@ -14,10 +15,15 @@ export interface RiderStats {
   onTimePercent: string | null;
 }
 
+export type RiderTableRow = (string | Badge)[];
+
 export interface RidersService {
   listLive(): Promise<LiveRider[]>;
   listDirectory(): Promise<RiderDirectoryEntry[]>;
   getStats(): Promise<RiderStats>;
+  listPerformance(): Promise<RiderTableRow[]>;
+  listEarnings(): Promise<RiderTableRow[]>;
+  listIncidents(): Promise<RiderTableRow[]>;
   assignOrder(orderId: string, riderId: string): Promise<unknown>;
   updateRiderStatus(riderId: string, status: string): Promise<unknown>;
   raiseIncident(input: { riderId: string; title: string; detail?: string }): Promise<unknown>;

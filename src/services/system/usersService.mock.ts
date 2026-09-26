@@ -50,7 +50,7 @@ export const mockUsersService: UsersService = {
       name: input.name,
       email: input.email,
       role: input.roleId ?? "admin",
-      scope: "Store Limited",
+      scope: input.assignedStores?.join(", ") || (input.primaryStoreId ? input.primaryStoreId : "Global"),
       moduleCount: "0",
       sensitiveRights: "None",
       lastLogin: "Never",
@@ -88,13 +88,21 @@ export const mockUsersService: UsersService = {
     };
   },
 
-  async assignRole(id: string, roleId: string): Promise<SystemUser> {
+  async assignRole(
+    id: string,
+    roleId: string,
+    opts?: { assignedStores?: string[]; primaryStoreId?: string }
+  ): Promise<SystemUser> {
     await mockDelay(200);
     let updated: SystemUser | undefined;
     table.update((rows) =>
       rows.map((u) => {
         if (u.id !== id) return u;
-        updated = { ...u, role: roleId };
+        updated = {
+          ...u,
+          role: roleId,
+          ...(opts?.assignedStores ? { scope: opts.assignedStores.join(", ") || "Global" } : {}),
+        };
         return updated;
       })
     );

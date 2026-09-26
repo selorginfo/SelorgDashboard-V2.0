@@ -122,10 +122,10 @@ export function StoreEditorDialog({ open, onOpenChange, existing }: StoreEditorD
         </div>
 
         <div>
-          <FieldLabel>Location (click map or drag pin)</FieldLabel>
+          <FieldLabel>Location</FieldLabel>
           <StoreLocationPicker
-            latitude={lat}
-            longitude={lng}
+            latitude={lat || DEFAULT_LAT}
+            longitude={lng || DEFAULT_LNG}
             radiusKm={form.serviceRadius}
             onChange={({ latitude, longitude }) =>
               setForm({ ...form, location: { type: "Point", coordinates: [longitude, latitude] } })

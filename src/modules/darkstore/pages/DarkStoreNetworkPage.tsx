@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Plus, Pencil, Trash2, MapPin, Clock, Warehouse } from "lucide-react";
 import { useStoreRecords, useCreateStore, useUpdateStore, useDeleteStore } from "@/modules/darkstore/hooks/useStores";
 import type { DarkStoreRecord, DarkStoreInput } from "@/modules/darkstore/hooks/useStores";
+import { StoreLocationPicker } from "@/modules/darkstore/components/StoreLocationPicker";
 import { api } from "@/lib/apiClient";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -17,11 +18,15 @@ interface WarehouseOption {
   city: string;
 }
 
+/** Chennai default center so the map opens on a real city, not 0,0. */
+const DEFAULT_LNG = 80.2571;
+const DEFAULT_LAT = 13.0067;
+
 const EMPTY_FORM: DarkStoreInput = {
   name: "",
   code: "",
   warehouseId: null,
-  location: { type: "Point", coordinates: [0, 0] },
+  location: { type: "Point", coordinates: [DEFAULT_LNG, DEFAULT_LAT] },
   address: { line1: "", line2: "", city: "", state: "", pincode: "" },
   serviceRadius: 5,
   isActive: true,
@@ -282,13 +287,61 @@ export function DarkStoreNetworkPage() {
               <input className={styles.input} value={form.contactPhone} onChange={(e) => setForm((f) => ({ ...f, contactPhone: e.target.value }))} placeholder="+91 98765 43210" />
             </label>
 
+            <div className={`${styles.mapBlock} ${styles.fullWidth}`}>
+              <span className={styles.label}>Location on map *</span>
+              <StoreLocationPicker
+                latitude={form.location.coordinates[1] || DEFAULT_LAT}
+                longitude={form.location.coordinates[0] || DEFAULT_LNG}
+                radiusKm={form.serviceRadius}
+                height={280}
+                onChange={({ latitude, longitude }) =>
+                  setForm((f) => ({
+                    ...f,
+                    location: { type: "Point", coordinates: [longitude, latitude] },
+                  }))
+                }
+              />
+            </div>
+
             <label className={styles.label}>
               Latitude *
-              <input className={styles.input} type="number" step="any" value={form.location.coordinates[1] || ""} onChange={(e) => setForm((f) => ({ ...f, location: { ...f.location, coordinates: [f.location.coordinates[0], parseFloat(e.target.value) || 0] } }))} placeholder="12.97194" required />
+              <input
+                className={styles.input}
+                type="number"
+                step="any"
+                value={form.location.coordinates[1] || ""}
+                onChange={(e) =>
+                  setForm((f) => ({
+                    ...f,
+                    location: {
+                      ...f.location,
+                      coordinates: [f.location.coordinates[0], parseFloat(e.target.value) || 0],
+                    },
+                  }))
+                }
+                placeholder="13.0067"
+                required
+              />
             </label>
             <label className={styles.label}>
               Longitude *
-              <input className={styles.input} type="number" step="any" value={form.location.coordinates[0] || ""} onChange={(e) => setForm((f) => ({ ...f, location: { ...f.location, coordinates: [parseFloat(e.target.value) || 0, f.location.coordinates[1]] } }))} placeholder="77.64115" required />
+              <input
+                className={styles.input}
+                type="number"
+                step="any"
+                value={form.location.coordinates[0] || ""}
+                onChange={(e) =>
+                  setForm((f) => ({
+                    ...f,
+                    location: {
+                      ...f.location,
+                      coordinates: [parseFloat(e.target.value) || 0, f.location.coordinates[1]],
+                    },
+                  }))
+                }
+                placeholder="80.2571"
+                required
+              />
             </label>
 
             <label className={styles.label}>

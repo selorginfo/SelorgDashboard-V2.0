@@ -1,9 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, type CSSProperties } from "react";
 import { ShieldCheck } from "lucide-react";
 import { Dialog } from "@/components/ui/Dialog";
 import { Input, FieldLabel } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { useSendUserOtp, useVerifyUserOtp } from "@/modules/system/hooks/useUsers";
+import { useRolesList } from "@/modules/roles/hooks/useRoles";
+import { useStoreRecords } from "@/modules/darkstore/hooks/useStores";
+import { roleId, isStoreScopedRole } from "@/services/roles/rolesService";
 import type { AdminUserInput } from "@/services/system/usersService";
 
 interface Props {
@@ -13,9 +16,17 @@ interface Props {
   isLoading: boolean;
 }
 
-const ROLES = ["admin", "darkstore", "warehouse", "finance", "rider", "vendor", "production", "merch"];
-
 type Step = "details" | "otp" | "verified";
+
+const selectStyle: CSSProperties = {
+  width: "100%",
+  padding: "8px 10px",
+  borderRadius: 6,
+  border: "1px solid var(--border)",
+  background: "var(--bg)",
+  color: "var(--tx)",
+  fontSize: "0.875rem",
+};
 
 export function AdminUserFormModal({ open, onOpenChange, onSubmit, isLoading }: Props) {
   const [step, setStep] = useState<Step>("details");
@@ -23,7 +34,8 @@ export function AdminUserFormModal({ open, onOpenChange, onSubmit, isLoading }: 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [department, setDepartment] = useState("");
-  const [role, setRole] = useState("admin");
+  const [pickedRoleId, setPickedRoleId] = useState("");
+  const [darkStoreId, setDarkStoreId] = useState("");
   const [otp, setOtp] = useState("");
   const [verificationRequestId, setVerificationRequestId] = useState("");
   const [emailVerifiedToken, setEmailVerifiedToken] = useState("");
@@ -31,20 +43,45 @@ export function AdminUserFormModal({ open, onOpenChange, onSubmit, isLoading }: 
 
   const sendOtp = useSendUserOtp();
   const verifyOtp = useVerifyUserOtp();
+  const { data: roles } = useRolesList();
+  const { data: stores } = useStoreRecords();
+
+  const selectedRole = useMemo(
+    () => (roles ?? []).find((r) => roleId(r) === pickedRoleId) ?? null,
+    [roles, pickedRoleId]
+  );
+  const needsStore = isStoreScopedRole(selectedRole);
 
   useEffect(() => {
     if (open) {
       setStep("details");
-      setName(""); setEmail(""); setPassword(""); setDepartment(""); setRole("admin");
-      setOtp(""); setVerificationRequestId(""); setEmailVerifiedToken(""); setError("");
+      setName("");
+      setEmail("");
+      setPassword("");
+      setDepartment("");
+      setPickedRoleId("");
+      setDarkStoreId("");
+      setOtp("");
+      setVerificationRequestId("");
+      setEmailVerifiedToken("");
+      setError("");
     }
   }, [open]);
+
+  // Prefer Dark Store Manager as the default when creating ops users.
+  useEffect(() => {
+    if (!open || pickedRoleId || !(roles ?? []).length) return;
+    const dsm = (roles ?? []).find((r) => r.name.toLowerCase().includes("dark store manager"));
+    if (dsm) setPickedRoleId(roleId(dsm));
+  }, [open, roles, pickedRoleId]);
 
   function handleSendOtp(e: React.FormEvent) {
     e.preventDefault();
     if (!name.trim()) { setError("Name is required"); return; }
     if (!email.trim()) { setError("Email is required"); return; }
     if (password.length < 6) { setError("Password must be at least 6 characters"); return; }
+    if (!pickedRoleId) { setError("Select a role"); return; }
+    if (needsStore && !darkStoreId) { setError("Select the dark store this manager controls"); return; }
     setError("");
     sendOtp.mutate(email.trim().toLowerCase(), {
       onSuccess: (res) => {
@@ -71,15 +108,23 @@ export function AdminUserFormModal({ open, onOpenChange, onSubmit, isLoading }: 
 
   function handleCreate(e: React.FormEvent) {
     e.preventDefault();
+    const storeCode = (stores ?? []).find((s) => s._id === darkStoreId)?.code;
     onSubmit({
       name: name.trim(),
       email: email.trim().toLowerCase(),
       password,
       department: department.trim() || undefined,
-      roleId: role,
+      roleId: pickedRoleId,
       emailVerifiedToken,
+      assignedStores: needsStore && darkStoreId ? [storeCode || darkStoreId] : undefined,
+      primaryStoreId: needsStore && darkStoreId ? (storeCode || darkStoreId) : undefined,
     });
   }
+
+  const storeLabel = useMemo(() => {
+    const s = (stores ?? []).find((x) => x._id === darkStoreId);
+    return s ? `${s.name} (${s.code})` : darkStoreId;
+  }, [stores, darkStoreId]);
 
   const footerByStep: Record<Step, React.ReactNode> = {
     details: (
@@ -121,7 +166,7 @@ export function AdminUserFormModal({ open, onOpenChange, onSubmit, isLoading }: 
       title={titleByStep[step]}
       description={
         step === "details"
-          ? "Fill in the user details. A 6-digit code will be sent to the email to confirm access."
+          ? "Assign a role and, for Dark Store Manager, the dark store they control. A verification code is emailed before the account is created."
           : step === "otp"
           ? `Enter the 6-digit code sent to ${email}. It expires in 10 minutes.`
           : "Email verified. Review details and create the account."
@@ -153,15 +198,32 @@ export function AdminUserFormModal({ open, onOpenChange, onSubmit, isLoading }: 
             <Input value={department} onChange={(e) => setDepartment(e.target.value)} placeholder="e.g. Operations" />
           </div>
           <div>
-            <FieldLabel>Role</FieldLabel>
-            <select
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-              style={{ width: "100%", padding: "8px 10px", borderRadius: 6, border: "1px solid var(--border)", background: "var(--bg)", color: "var(--tx)", fontSize: "0.875rem" }}
-            >
-              {ROLES.map((r) => <option key={r} value={r}>{r.charAt(0).toUpperCase() + r.slice(1)}</option>)}
+            <FieldLabel>Role *</FieldLabel>
+            <select value={pickedRoleId} onChange={(e) => { setPickedRoleId(e.target.value); setDarkStoreId(""); }} style={selectStyle} required>
+              <option value="">Select a role…</option>
+              {(roles ?? []).map((r) => (
+                <option key={roleId(r)} value={roleId(r)}>
+                  {r.name}{isStoreScopedRole(r) ? " · store scoped" : ""}
+                </option>
+              ))}
             </select>
           </div>
+          {needsStore ? (
+            <div>
+              <FieldLabel>Dark store they control *</FieldLabel>
+              <select value={darkStoreId} onChange={(e) => setDarkStoreId(e.target.value)} style={selectStyle} required>
+                <option value="">Select dark store…</option>
+                {(stores ?? []).filter((s) => s.isActive !== false).map((s) => (
+                  <option key={s._id} value={s._id}>
+                    {s.name} ({s.code})
+                  </option>
+                ))}
+              </select>
+              <p style={{ margin: "6px 0 0", fontSize: 12, color: "var(--tx-muted)" }}>
+                This manager will only see orders, inventory and ops data for the selected store.
+              </p>
+            </div>
+          ) : null}
         </form>
       )}
 
@@ -201,14 +263,18 @@ export function AdminUserFormModal({ open, onOpenChange, onSubmit, isLoading }: 
           </div>
           {[
             ["Name", name],
-            ["Role", role.charAt(0).toUpperCase() + role.slice(1)],
+            ["Role", selectedRole?.name ?? "—"],
+            needsStore ? ["Dark store", storeLabel] : null,
             department ? ["Department", department] : null,
-          ].filter(Boolean).map(([label, value]) => (
-            <div key={label} style={{ display: "flex", justifyContent: "space-between", fontSize: "0.85rem", padding: "4px 0", borderBottom: "1px solid var(--border)" }}>
-              <span style={{ color: "var(--tx-muted)" }}>{label}</span>
-              <span style={{ fontWeight: 500 }}>{value}</span>
-            </div>
-          ))}
+          ].filter(Boolean).map((row) => {
+            const [label, value] = row as [string, string];
+            return (
+              <div key={label} style={{ display: "flex", justifyContent: "space-between", fontSize: "0.85rem", padding: "4px 0", borderBottom: "1px solid var(--border)" }}>
+                <span style={{ color: "var(--tx-muted)" }}>{label}</span>
+                <span style={{ fontWeight: 500 }}>{value}</span>
+              </div>
+            );
+          })}
         </form>
       )}
     </Dialog>

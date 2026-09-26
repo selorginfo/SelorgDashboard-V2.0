@@ -1,6 +1,12 @@
 import { useMemo, useState } from "react";
-import { CheckCircle2, XCircle, MessageCircleQuestion, UserPlus } from "lucide-react";
-import { useApplications, useDecideApplication, useAssignReviewer } from "@/modules/approvals/hooks/useApprovals";
+import { CheckCircle2, XCircle, MessageCircleQuestion, UserPlus, ExternalLink, FileText } from "lucide-react";
+import {
+  useApplications,
+  useDecideApplication,
+  useAssignReviewer,
+  useReviewDocument,
+  useApplicationDocuments,
+} from "@/modules/approvals/hooks/useApprovals";
 import { KpiStrip } from "@/components/ui/KpiStrip";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
@@ -10,7 +16,7 @@ import { CardSkeleton } from "@/components/ui/Skeleton";
 import { ErrorState, EmptyState } from "@/components/ui/EmptyState";
 import { useUiStore } from "@/store/uiStore";
 import { usePermission } from "@/hooks/usePermission";
-import type { WorkerKind } from "@/types/approval";
+import type { ApprovalDocument, WorkerKind } from "@/types/approval";
 import type { ModuleId } from "@/constants/nav";
 import styles from "./ApprovalWorkspacePage.module.css";
 
@@ -24,7 +30,7 @@ const LABELS: Record<WorkerKind, { location: string; verification: string; detai
   picker: { location: "Preferred store", verification: "Identity", detail: "Shift preference", moduleId: "picker-approvals" },
 };
 
-const TABS = ["Needs review", "Documents required", "Approved", "Rejected"];
+const TABS = ["Interview", "Documents required", "Approved", "Rejected"];
 
 function initials(name: string): string {
   return name
@@ -39,7 +45,22 @@ function tabFor(status: string): string {
   if (status === "Approved") return "Approved";
   if (status === "Rejected") return "Rejected";
   if (status === "Documents required") return "Documents required";
-  return "Needs review";
+  return "Interview";
+}
+
+function docLabel(doc: ApprovalDocument): string {
+  const type = doc.type.replace(/_/g, " ").toUpperCase();
+  return doc.side ? `${type} · ${doc.side}` : type;
+}
+
+function isImageUrl(url: string | null): boolean {
+  if (!url) return false;
+  return /\.(png|jpe?g|webp|gif)(\?|$)/i.test(url) || url.includes("placehold.co") || url.includes("image");
+}
+
+function isPdfUrl(url: string | null): boolean {
+  if (!url) return false;
+  return /\.pdf(\?|$)/i.test(url) || url.toLowerCase().includes("application/pdf");
 }
 
 export function ApprovalWorkspacePage({ kind }: { kind: WorkerKind }) {
@@ -47,7 +68,9 @@ export function ApprovalWorkspacePage({ kind }: { kind: WorkerKind }) {
   const [tab, setTab] = useState(TABS[0] as string);
   const [selectedId, setSelectedId] = useState<string | undefined>(undefined);
   const [note, setNote] = useState("");
+  const [previewDocId, setPreviewDocId] = useState<string | undefined>(undefined);
   const decide = useDecideApplication(kind);
+  const reviewDoc = useReviewDocument(kind);
   const assignReviewer = useAssignReviewer(kind);
   const pushToast = useUiStore((s) => s.pushToast);
   const { can } = usePermission();
@@ -60,19 +83,26 @@ export function ApprovalWorkspacePage({ kind }: { kind: WorkerKind }) {
   const selected =
     applications?.find((a) => a.id === selectedId) ??
     filtered[0] ??
-    applications?.find((a) => tabFor(a.status?.label ?? "") === "Needs review") ??
+    applications?.find((a) => tabFor(a.status?.label ?? "") === "Interview") ??
     applications?.[0];
+
+  const { data: liveDocuments } = useApplicationDocuments(kind, selected?.id);
+  const documents = liveDocuments ?? selected?.documents ?? [];
+
+  const previewDoc =
+    documents.find((d) => d.id === previewDocId) ??
+    documents.find((d) => d.url) ??
+    documents[0];
 
   if (isLoading) return <CardSkeleton />;
   if (isError || !applications) {
     return <ErrorState message="Couldn't load applications." onRetry={() => refetch()} />;
   }
 
-  const needsReview = applications.filter((a) => tabFor(a.status?.label ?? "") === "Needs review").length;
+  const interviewCount = applications.filter((a) => tabFor(a.status?.label ?? "") === "Interview").length;
   const docsRequired = applications.filter((a) => a.status?.label === "Documents required").length;
   const approvedCount = applications.filter((a) => a.status?.label === "Approved").length;
   const rejectedCount = applications.filter((a) => a.status?.label === "Rejected").length;
-  const slaBreachedCount = applications.filter((a) => a.status?.label === "SLA breached").length;
 
   const decided = applications.filter((a) => a.status?.label === "Approved" || a.status?.label === "Rejected");
   const avgDecisionLabel =
@@ -84,6 +114,10 @@ export function ApprovalWorkspacePage({ kind }: { kind: WorkerKind }) {
     ? [
         { label: labels.verification, passed: selected.verification === "Verified" },
         { label: labels.detail, passed: selected.detail === "Verified" },
+        {
+          label: "Documents uploaded",
+          passed: documents.length > 0,
+        },
       ]
     : [];
   const checksPassed = checks.filter((c) => c.passed).length;
@@ -91,6 +125,10 @@ export function ApprovalWorkspacePage({ kind }: { kind: WorkerKind }) {
 
   function decideWith(decision: "Approve" | "Reject" | "Request information" | "Start review") {
     if (!selected) return;
+    if (decision === "Reject" && !note.trim()) {
+      pushToast("Write a rejection reason so the applicant can fix and resubmit", "error");
+      return;
+    }
     decide.mutate(
       { id: selected.id, decision, note },
       {
@@ -98,7 +136,24 @@ export function ApprovalWorkspacePage({ kind }: { kind: WorkerKind }) {
           pushToast(`${selected.applicant} — ${decision.toLowerCase()}d`, "success");
           setNote("");
         },
-        onError: () => pushToast("Couldn't record the decision", "error"),
+        onError: (err) => pushToast(err instanceof Error ? err.message : "Couldn't record the decision", "error"),
+      },
+    );
+  }
+
+  function reviewDocument(doc: ApprovalDocument, status: "approved" | "rejected") {
+    if (status === "rejected" && !note.trim()) {
+      pushToast("Write a reason before rejecting a document", "error");
+      return;
+    }
+    reviewDoc.mutate(
+      { documentId: doc.id, status, rejectionReason: note.trim() },
+      {
+        onSuccess: () => {
+          pushToast(`${docLabel(doc)} ${status}`, "success");
+          if (status === "rejected") setNote("");
+        },
+        onError: (err) => pushToast(err instanceof Error ? err.message : "Couldn't review document", "error"),
       },
     );
   }
@@ -124,7 +179,7 @@ export function ApprovalWorkspacePage({ kind }: { kind: WorkerKind }) {
         <MessageCircleQuestion size={13} /> Request information
       </Button>
       <Button size="sm" disabled={!selected || decide.isPending} onClick={() => decideWith("Start review")}>
-        Start review
+        Start interview review
       </Button>
       {can(labels.moduleId, "assign") ? (
         <Button
@@ -149,11 +204,10 @@ export function ApprovalWorkspacePage({ kind }: { kind: WorkerKind }) {
       <KpiStrip
         moduleId={labels.moduleId}
         kpis={[
-          { value: String(needsReview), label: "Awaiting review", color: needsReview ? "var(--amber-tx)" : undefined },
+          { value: String(interviewCount), label: "In interview", color: interviewCount ? "var(--amber-tx)" : undefined },
           { value: String(docsRequired), label: "Documents required", color: docsRequired ? "var(--red-tx)" : undefined },
           { value: String(approvedCount), label: "Approved" },
           { value: String(rejectedCount), label: "Rejected" },
-          { value: String(slaBreachedCount), label: "SLA breached", color: slaBreachedCount ? "var(--red-tx)" : undefined },
           { value: avgDecisionLabel, label: "Avg decision time" },
         ]}
       />
@@ -184,6 +238,7 @@ export function ApprovalWorkspacePage({ kind }: { kind: WorkerKind }) {
                 onClick={() => {
                   setSelectedId(a.id);
                   setNote("");
+                  setPreviewDocId(undefined);
                 }}
               >
                 <span className={styles.queueAvatar}>{initials(a.applicant || "?")}</span>
@@ -194,7 +249,7 @@ export function ApprovalWorkspacePage({ kind }: { kind: WorkerKind }) {
                   <div className={styles.queueMeta}>
                     {a.id} · {a.applied}
                   </div>
-                  <Badge label={a.status?.label ?? "Pending"} tone={a.status?.tone ?? "grey"} />
+                  <Badge label={a.status?.label ?? "Interview"} tone={a.status?.tone ?? "amber"} />
                 </div>
               </button>
             ))}
@@ -208,7 +263,7 @@ export function ApprovalWorkspacePage({ kind }: { kind: WorkerKind }) {
                   <div className={styles.applicantName}>{selected.applicant}</div>
                   <div className={styles.applicantId}>{selected.id}</div>
                 </div>
-                <Badge label={selected.status?.label ?? "Pending"} tone={selected.status?.tone ?? "grey"} />
+                <Badge label={selected.status?.label ?? "Interview"} tone={selected.status?.tone ?? "amber"} />
               </div>
 
               <div className={styles.fields}>
@@ -246,6 +301,81 @@ export function ApprovalWorkspacePage({ kind }: { kind: WorkerKind }) {
                   <span className={styles.fieldLabel}>Status</span>
                   <span className={styles.fieldValue}>{selected.status?.label}</span>
                 </div>
+              </div>
+
+              <div className={styles.docsSection}>
+                <div className={styles.verificationHeader}>
+                  <span>Verification documents</span>
+                  <span className={styles.verificationCount}>{documents.length} uploaded</span>
+                </div>
+                {documents.length === 0 ? (
+                  <div className={styles.docsEmpty}>No documents uploaded yet.</div>
+                ) : (
+                  <div className={styles.docsLayout}>
+                    <div className={styles.docList}>
+                      {documents.map((doc) => (
+                        <button
+                          key={doc.id}
+                          type="button"
+                          className={styles.docRow}
+                          data-selected={previewDoc?.id === doc.id}
+                          onClick={() => setPreviewDocId(doc.id)}
+                        >
+                          <FileText size={14} />
+                          <div className={styles.docRowBody}>
+                            <span className={styles.docName}>{docLabel(doc)}</span>
+                            <span className={styles.docMeta}>{doc.fileName || doc.id}</span>
+                          </div>
+                          <Badge
+                            label={doc.status === "approved" ? "Approved" : doc.status === "rejected" ? "Rejected" : "Pending"}
+                            tone={doc.status === "approved" ? "green" : doc.status === "rejected" ? "red" : "amber"}
+                          />
+                        </button>
+                      ))}
+                    </div>
+                    <div className={styles.docPreview}>
+                      {previewDoc?.url ? (
+                        <>
+                          {isImageUrl(previewDoc.url) ? (
+                            <img src={previewDoc.url} alt={docLabel(previewDoc)} className={styles.docImage} />
+                          ) : isPdfUrl(previewDoc.url) ? (
+                            <iframe title={docLabel(previewDoc)} src={previewDoc.url} className={styles.docFrame} />
+                          ) : (
+                            <div className={styles.docsEmpty}>
+                              Preview not available for this file type. Open in a new tab.
+                            </div>
+                          )}
+                          <div className={styles.docActions}>
+                            <a href={previewDoc.url} target="_blank" rel="noreferrer" className={styles.docOpen}>
+                              <ExternalLink size={13} /> Open full document
+                            </a>
+                            <Button
+                              size="sm"
+                              variant="primary"
+                              disabled={reviewDoc.isPending}
+                              onClick={() => reviewDocument(previewDoc, "approved")}
+                            >
+                              Approve doc
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="danger"
+                              disabled={reviewDoc.isPending}
+                              onClick={() => reviewDocument(previewDoc, "rejected")}
+                            >
+                              Reject doc
+                            </Button>
+                          </div>
+                          {previewDoc.rejectionReason ? (
+                            <div className={styles.docRejectReason}>Rejected: {previewDoc.rejectionReason}</div>
+                          ) : null}
+                        </>
+                      ) : (
+                        <div className={styles.docsEmpty}>Select a document to preview.</div>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className={styles.verification}>
@@ -293,7 +423,7 @@ export function ApprovalWorkspacePage({ kind }: { kind: WorkerKind }) {
 
               <textarea
                 className={styles.noteInput}
-                placeholder="Add a note for this decision (visible in the applicant's history)"
+                placeholder="Rejection / decision reason (required when rejecting — shown to the applicant)"
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
                 rows={3}
@@ -306,11 +436,11 @@ export function ApprovalWorkspacePage({ kind }: { kind: WorkerKind }) {
               <div className={styles.decisionTitle}>Decision</div>
               {checksPassed === totalChecks ? (
                 <div className={styles.decisionBanner} data-tone="green">
-                  All checks passed — this applicant can be approved.
+                  Documents are ready — approve to unlock the {kind} app home screen.
                 </div>
               ) : (
                 <div className={styles.decisionBanner} data-tone="amber">
-                  {checksPassed} of {totalChecks} checks passed — resolve outstanding items before approving.
+                  Applicant stays on the Interview screen until you approve.
                 </div>
               )}
 
@@ -324,13 +454,14 @@ export function ApprovalWorkspacePage({ kind }: { kind: WorkerKind }) {
                 <CheckCircle2 size={14} /> Approve {kind}
               </Button>
               <Button onClick={() => decideWith("Start review")} isLoading={decide.isPending} className={styles.decisionBtn}>
-                Start review
+                Start interview review
               </Button>
               <Button onClick={() => decideWith("Request information")} isLoading={decide.isPending} className={styles.decisionBtn}>
                 <MessageCircleQuestion size={14} /> Request information
               </Button>
               <div className={styles.dangerZone}>
                 <div className={styles.dangerLabel}>Danger zone</div>
+                <p className={styles.dangerNote}>Rejecting requires a written reason. The {kind} can resubmit after fixing documents.</p>
                 <Button variant="danger" onClick={() => decideWith("Reject")} isLoading={decide.isPending} className={styles.decisionBtn}>
                   <XCircle size={14} /> Reject application
                 </Button>

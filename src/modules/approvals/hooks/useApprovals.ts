@@ -18,6 +18,46 @@ export function useDecideApplication(kind: WorkerKind) {
   });
 }
 
+export function useReviewDocument(kind: WorkerKind) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      documentId,
+      status,
+      rejectionReason,
+    }: {
+      documentId: string;
+      status: "approved" | "rejected";
+      rejectionReason: string;
+    }) => {
+      if (!approvalService.reviewDocument) {
+        return Promise.reject(new Error("Document review is not available"));
+      }
+      return approvalService.reviewDocument(kind, documentId, status, rejectionReason);
+    },
+    onSuccess: (_data, vars) => {
+      queryClient.invalidateQueries({ queryKey: key(kind) });
+      queryClient.invalidateQueries({ queryKey: [...key(kind), "documents"] });
+      void vars;
+    },
+  });
+}
+
+export function useApplicationDocuments(kind: WorkerKind, applicationId: string | undefined) {
+  return useQuery({
+    queryKey: [...key(kind), "documents", applicationId],
+    enabled: Boolean(applicationId),
+    queryFn: async () => {
+      if (!applicationId) return [];
+      if (approvalService.getDocuments) {
+        return approvalService.getDocuments(kind, applicationId);
+      }
+      const apps = await approvalService.list(kind);
+      return apps.find((a) => a.id === applicationId)?.documents ?? [];
+    },
+  });
+}
+
 export function useAssignReviewer(kind: WorkerKind) {
   const queryClient = useQueryClient();
   return useMutation({

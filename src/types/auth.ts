@@ -29,6 +29,9 @@ export interface AdminUser {
   scope: string;
   twoFactorEnabled: boolean;
   status: "active" | "invited" | "deactivated";
+  /** Dark store codes / ids this user may access (empty = global / unscoped). */
+  assignedStores?: string[];
+  primaryStoreId?: string;
   /** Account-settings-only fields, shown on the Profile tab — populated with the design's literal
    * values for Arun K. (Super Admin), the default logged-in seed user; other roles fall back to
    * generic placeholders in the UI rather than invented specifics. */

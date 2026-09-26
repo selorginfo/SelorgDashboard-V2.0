@@ -33,7 +33,8 @@ interface RawOrder {
   sla_status?: string;
   total_bill?: number;
   pickerAssignment?: { pickerName?: string };
-  assignee?: { name?: string };
+  assignee?: { name?: string; id?: string };
+  hhdUserId?: string;
   pickingData?: { missingItems?: { productId?: string }[]; startTime?: string };
   status?: string;
   createdAt?: string;
@@ -62,10 +63,40 @@ function normalizeItem(raw: RawOrderItem, missingIds: Set<string>): OrderItem {
   };
 }
 
-function toOrderStatus(raw: string): OrderStatus {
+function toOrderStatus(raw: string, fulfillmentStage?: string, fulfillmentLabel?: string): OrderStatus {
+  if (fulfillmentLabel) {
+    const label = fulfillmentLabel as OrderStatus;
+    const known: OrderStatus[] = [
+      "Placed",
+      "Confirmed",
+      "Waiting for Picker",
+      "Picker Accepted",
+      "Waiting for Rider",
+      "Rider Accepted",
+      "Rider Picked",
+      "Out for delivery",
+      "Delivered",
+      "Exception",
+      "Cancelled",
+    ];
+    if (known.includes(label)) return label;
+  }
+  const stageMap: Record<string, OrderStatus> = {
+    pending: "Placed",
+    confirmed: "Waiting for Picker",
+    picker_accepted: "Picker Accepted",
+    packed_in_rack: "Waiting for Rider",
+    rider_accepted: "Rider Accepted",
+    rider_picked: "Rider Picked",
+    delivered: "Delivered",
+    exception: "Exception",
+    cancelled: "Cancelled",
+  };
+  if (fulfillmentStage && stageMap[fulfillmentStage]) return stageMap[fulfillmentStage];
+
   const map: Record<string, OrderStatus> = {
-    PENDING: "Picking",
-    CONFIRMED: "Picking",
+    PENDING: "Placed",
+    CONFIRMED: "Waiting for Picker",
     "GETTING-PACKED": "Packing",
     "ON-THE-WAY": "Out for delivery",
     ARRIVED: "Out for delivery",
@@ -79,9 +110,9 @@ function toOrderStatus(raw: string): OrderStatus {
     DELIVERED: "Delivered",
     CANCELLED: "Cancelled",
     EXCEPTION: "Exception",
-    NEW: "Picking",
+    NEW: "Waiting for Picker",
   };
-  return map[raw?.toUpperCase()] ?? "Picking";
+  return map[raw?.toUpperCase()] ?? "Exception";
 }
 
 function toPaymentStatus(paymentStatus?: string, paymentMethod?: string): PaymentStatus {
@@ -104,13 +135,26 @@ function toSlaStatus(raw?: string): SlaStatus {
   return "On track";
 }
 
-function toStage(status?: string): number {
+function toStage(status?: string, fulfillmentStage?: string): number {
+  const stageIdx: Record<string, number> = {
+    pending: 0,
+    confirmed: 1,
+    picker_accepted: 2,
+    packed_in_rack: 6,
+    rider_accepted: 7,
+    rider_picked: 8,
+    delivered: 10,
+    exception: 0,
+    cancelled: 0,
+  };
+  if (fulfillmentStage && stageIdx[fulfillmentStage] != null) return stageIdx[fulfillmentStage];
+
   const s = (status || "").toLowerCase();
-  if (s === "pending") return 0; // Placed
-  if (s === "confirmed" || s === "assigned") return 1; // Confirmed
-  if (s === "picking") return 2; // Picking started
-  if (s === "picked") return 3; // Picking completed
-  if (s === "getting-packed") return 4; // HSD / packing
+  if (s === "pending") return 0;
+  if (s === "confirmed" || s === "assigned") return 1;
+  if (s === "picking") return 2;
+  if (s === "picked") return 3;
+  if (s === "getting-packed") return 4;
   if (s === "packed") return 5;
   if (s === "ready" || s === "ready_for_dispatch") return 6;
   if (s === "on-the-way" || s === "out_for_delivery") return 9;
@@ -132,17 +176,31 @@ function normalizeOrder(raw: RawOrder): Order {
     (addr
       ? [addr.line1 || addr.address, addr.line2, addr.city, addr.pincode].filter(Boolean).join(", ")
       : "");
+  const fulfillmentStage = String(raw.fulfillmentStage ?? "");
+  const fulfillmentLabel = String(raw.fulfillmentLabel ?? "");
+  const riderId =
+    String(raw.riderId || "") ||
+    (raw.riderStage === "accepted" || raw.riderStage === "picked_up" || raw.riderStage === "delivered"
+      ? String(raw.pickerId || "")
+      : "");
+  const pickerName =
+    raw.pickerAssignment?.pickerName ??
+    raw.assignee?.name ??
+    (raw.hhdUserId ? `HSD ${String(raw.hhdUserId).slice(-6)}` : null) ??
+    "Unassigned";
   return {
     id,
-    customer: String(raw.customer_name ?? ""),
-    phone: String(raw.customer_phone ?? ""),
-    store: String(raw.storeId ?? raw.store_id ?? "—"),
+    customer: String(raw.customer_name ?? raw.customerName ?? ""),
+    phone: String(raw.customer_phone ?? raw.customerPhone ?? ""),
+    store: String(raw.storeId ?? raw.store_id ?? raw.offerHubKey ?? "—"),
     pickupStore: String(raw.storeId ?? raw.store_id ?? ""),
-    rider: String(raw.riderId ?? "Unassigned"),
-    picker: String(raw.pickerAssignment?.pickerName ?? raw.assignee?.name ?? raw.pickerId ?? "Unassigned"),
-    status: toOrderStatus(raw.status ?? ""),
-    tone: toTone(raw.sla_status),
-    sla: toSlaStatus(raw.sla_status),
+    rider: riderId || (fulfillmentStage === "packed_in_rack" || raw.riderStage === "offered" ? "Waiting for Rider" : "Unassigned"),
+    picker: String(
+      pickerName === "Unassigned" && fulfillmentStage === "confirmed" ? "Waiting for Picker" : pickerName,
+    ),
+    status: toOrderStatus(raw.status ?? "", fulfillmentStage, fulfillmentLabel),
+    tone: toTone(raw.sla_status as string | undefined),
+    sla: toSlaStatus(raw.sla_status as string | undefined),
     value: `₹${raw.totalBill ?? raw.total_bill ?? 0}`,
     date: raw.createdAt
       ? new Date(raw.createdAt).toLocaleString("en-IN", { hour: "2-digit", minute: "2-digit", day: "2-digit", month: "short" })
@@ -151,9 +209,14 @@ function normalizeOrder(raw: RawOrder): Order {
     paymentLabel: raw.paymentMethodDisplay ?? raw.paymentMethod?.displayLabel ?? raw.payment_method ?? "",
     zone: "",
     address,
-    exception: "",
-    stage: toStage(raw.status),
+    exception: String(raw.exceptionReason || raw.cancellationReason || ""),
+    stage: toStage(raw.status, fulfillmentStage),
     rawStatus: raw.status ?? "",
+    fulfillmentStage,
+    fulfillmentLabel,
+    hsdDeviceId: raw.hsdDeviceId ? String(raw.hsdDeviceId) : undefined,
+    bagCode: raw.bagCode ? String(raw.bagCode) : undefined,
+    dispatchBay: raw.dispatchBay ? String(raw.dispatchBay) : undefined,
     items,
     scans: [],
     refundLine:

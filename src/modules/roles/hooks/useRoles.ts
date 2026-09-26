@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { permissionsService, rolesService } from "@/services/roles";
+import type { CreateRoleInput } from "@/services/roles/rolesService";
 
 export function useRolesList() {
   return useQuery({ queryKey: ["roles-list"], queryFn: () => rolesService.listRoles(), staleTime: 60_000 });
@@ -15,6 +16,17 @@ export function usePermissionsMatrix() {
     queryKey: ["permissions-matrix"],
     queryFn: () => permissionsService.getMatrix(),
     staleTime: 5 * 60_000,
+  });
+}
+
+export function useCreateRole() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (input: CreateRoleInput) => rolesService.createRole(input),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ["roles-list"] });
+      void qc.invalidateQueries({ queryKey: ["roles-kpis"] });
+    },
   });
 }
 

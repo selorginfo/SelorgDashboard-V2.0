@@ -66,7 +66,7 @@ function advance(o: BulkOrder, target: number, by: string, note?: string): BulkO
   return { ...o, stage: target, status: statusForStage(target), history: [...o.history, ...events] };
 }
 
-export const bulkOrderService: BulkOrderService = {
+export const mockBulkOrderService: BulkOrderService = {
   async list() {
     await mockDelay();
     return table.all();

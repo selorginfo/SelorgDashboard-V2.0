@@ -24,6 +24,13 @@ export interface SaveRecordInput {
 
 export interface OpsService {
   getRoute(route: string): Promise<OpsRouteState>;
+  getKpis(route: string): Promise<{ value: string; label: string; color?: string }[]>;
+  calculateRoute(stops: Array<{ lat: number; lng: number; id?: string }>): Promise<{
+    distanceKm: number;
+    durationMin: number;
+    sequence: string[];
+    provider: string;
+  }>;
   applyAction(input: ApplyActionInput): Promise<OpsRouteState>;
   saveRecord(input: SaveRecordInput): Promise<OpsRouteState>;
   deleteRecord(route: string, id: string): Promise<OpsRouteState>;
@@ -109,10 +116,43 @@ function summary(values: Record<string, string>, fieldLabels: Record<string, str
     .join(" · ");
 }
 
-export const opsService: OpsService = {
+export const mockOpsService: OpsService = {
   async getRoute(route) {
     await mockDelay(200);
     return read(route);
+  },
+
+  async getKpis(route) {
+    await mockDelay(80);
+    // Even in mock mode, compute from table rows rather than design vanity numbers
+    const state = read(route);
+    const rows = Object.values(state.rows).flat();
+    const screen = OPS_SCREENS[route];
+    return (screen?.kpis ?? []).map((k, i) =>
+      i === 0 ? { ...k, value: String(rows.length) } : { ...k, value: rows.length ? k.value : "0" },
+    );
+  },
+
+  async calculateRoute(stops) {
+    await mockDelay(100);
+    let distanceKm = 0;
+    for (let i = 1; i < stops.length; i++) {
+      const a = stops[i - 1]!;
+      const b = stops[i]!;
+      const dLat = ((b.lat - a.lat) * Math.PI) / 180;
+      const dLng = ((b.lng - a.lng) * Math.PI) / 180;
+      const x =
+        Math.sin(dLat / 2) ** 2 +
+        Math.cos((a.lat * Math.PI) / 180) * Math.cos((b.lat * Math.PI) / 180) * Math.sin(dLng / 2) ** 2;
+      distanceKm += 6371 * 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1 - x));
+    }
+    distanceKm = Math.round(distanceKm * 100) / 100;
+    return {
+      distanceKm,
+      durationMin: Math.round(distanceKm * 3 + stops.length * 2),
+      sequence: stops.map((s, i) => s.id || `stop-${i + 1}`),
+      provider: "haversine",
+    };
   },
 
   async applyAction({ route, ids, action, values, by }) {

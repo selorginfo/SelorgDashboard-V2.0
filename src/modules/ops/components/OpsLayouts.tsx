@@ -18,6 +18,8 @@ export interface LayoutProps {
   onAction?: (id: string, action: string) => void;
   /** Opens an action that applies to every record in view (route plan toolbar). */
   onRouteAction?: (action: string) => void;
+  /** Live KPIs from the backend — layouts must not fall back to design-seed vanity numbers. */
+  kpis?: { value: string; label: string; color?: string }[];
 }
 
 const RAIL: Record<Tone, string> = {
@@ -585,36 +587,54 @@ export function RoutePlanLayout({ screen, tab, rows, onOpen, onAction, onRouteAc
 
 /* ---------------- funnel (stall-conv) ---------------- */
 
-export function FunnelLayout({ screen, tab, rows, onOpen }: LayoutProps) {
-  const steps = screen.kpis
-    .map((k) => ({ label: k.label, n: parseInt(k.value.replace(/[^\d]/g, ""), 10) }))
-    .filter((k) => !/%|rate|to order/i.test(k.label) && k.n > 0)
+export function FunnelLayout({ screen, tab, rows, onOpen, kpis }: LayoutProps) {
+  // Prefer live KPIs; never paint screens.generated vanity bars (810/486/…) when live data is zero/empty.
+  const source = (kpis && kpis.length ? kpis : null) ?? screen.kpis.map((k) => ({ ...k, value: "0" }));
+  const steps = source
+    .map((k) => ({ label: k.label, n: parseInt(String(k.value).replace(/[^\d]/g, ""), 10) || 0 }))
+    .filter((k) => !/%|rate|to order/i.test(k.label))
     .slice(0, 5);
-  const top = steps[0]?.n || 1;
+  const active = steps.filter((k) => k.n > 0);
+  const top = active[0]?.n || 1;
   return (
     <div className={styles.wrap}>
       <div className={styles.panel}>
         <div className={styles.sectionTitle}>Where customers drop out today</div>
-        <div className={styles.funnel}>
-          {steps.map((s, i) => {
-            const pct = Math.round((s.n / top) * 100);
-            const drop = i > 0 ? steps[i - 1]!.n - s.n : 0;
-            return (
-              <div key={s.label}>
-                <div className={styles.funnelRow}>
-                  <span>{s.label}</span>
-                  <div className={styles.funnelBar}>
-                    <div className={styles.funnelFill} style={{ width: `${Math.max(6, pct)}%`, background: i === 0 ? "var(--brand)" : i < 3 ? "var(--blue-tx)" : "var(--amber-tx)" }}>
-                      {s.n.toLocaleString("en-IN")}
+        {!active.length ? (
+          <EmptyState title="No funnel activity yet" description="Live conversion KPIs are zero — chart stays empty until stall interactions are recorded." />
+        ) : (
+          <div className={styles.funnel}>
+            {steps.map((s, i) => {
+              const pct = s.n > 0 ? Math.round((s.n / top) * 100) : 0;
+              const drop = i > 0 ? Math.max(0, steps[i - 1]!.n - s.n) : 0;
+              return (
+                <div key={s.label}>
+                  <div className={styles.funnelRow}>
+                    <span>{s.label}</span>
+                    <div className={styles.funnelBar}>
+                      <div
+                        className={styles.funnelFill}
+                        style={{
+                          width: `${Math.max(s.n > 0 ? 6 : 0, pct)}%`,
+                          background: i === 0 ? "var(--brand)" : i < 3 ? "var(--blue-tx)" : "var(--amber-tx)",
+                        }}
+                      >
+                        {s.n > 0 ? s.n.toLocaleString("en-IN") : ""}
+                      </div>
                     </div>
+                    <span className={styles.mono}>{pct}%</span>
                   </div>
-                  <span className={styles.mono}>{pct}%</span>
+                  {drop > 0 ? (
+                    <div className={styles.funnelRow}>
+                      <span />
+                      <span className={styles.funnelDrop}>−{drop.toLocaleString("en-IN")} dropped here</span>
+                    </div>
+                  ) : null}
                 </div>
-                {drop > 0 ? <div className={styles.funnelRow}><span /><span className={styles.funnelDrop}>−{drop.toLocaleString("en-IN")} dropped here</span></div> : null}
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+        )}
       </div>
       {!rows.length ? <Empty tab={tab} /> : <RecordCardsLayout screen={{ ...screen, flow: [] }} tab={tab} rows={rows} stageOf={() => 0} onOpen={onOpen} />}
     </div>

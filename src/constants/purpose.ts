@@ -129,14 +129,14 @@ export const PURPOSE: Partial<Record<ModuleId, [string, string, string]>> = {
     "Assigning notifies the worker; unconfirmed people get a reminder as the shift approaches.",
   ],
   "rider-approvals": [
-    "Rider operations",
-    "decide whether an applicant is cleared to deliver for Selorg",
-    "Approving activates their account so they can go online; rejecting closes the application with a recorded reason.",
+    "Rider operations leads",
+    "review interview documents, then approve or reject with a written reason",
+    "Until approved the rider stays on the Interview screen. Rejecting shows the reason so they can resubmit.",
   ],
   "picker-approvals": [
-    "Store operations",
-    "verify a picker applicant and allocate them a home dark store",
-    "Approving assigns the store and shift, and the picker can start on their next roster.",
+    "Store operations leads",
+    "view uploaded verification documents and clear the picker interview",
+    "Approving unlocks the picker app; rejecting requires a reason and allows resubmit.",
   ],
   "rider-dir": [
     "Rider manager",
@@ -145,8 +145,38 @@ export const PURPOSE: Partial<Record<ModuleId, [string, string, string]>> = {
   ],
   "picker-dir": [
     "Dark store manager",
-    "track picker productivity by store and shift, and intervene on accuracy",
-    "Store and shift changes take effect on the picker's next roster.",
+    "see approved pickers only — Available when on shift, otherwise Offline",
+    "Pending applicants stay under Picker Approvals until an admin approves them.",
+  ],
+  "rider-details": [
+    "Rider manager and ops",
+    "open one rider's profile, work, location, docs, earnings, attendance, orders and activity",
+    "Date-range stats and order rows drill into the live order record.",
+  ],
+  "picker-details": [
+    "Dark store manager and ops",
+    "open one picker's profile, work, HSD session, productivity, orders and activity",
+    "Date-range stats and order rows drill into the live order record.",
+  ],
+  "cod-collection": [
+    "Finance and ops",
+    "track COD from collection through rider transfer to the company without treating pending cash as revenue",
+    "Settled amounts are realized; riders with undeposited float cannot go online the next day.",
+  ],
+  "order-progress": [
+    "Ops lead on shift",
+    "see every open order by fulfillment stage and its timeline from order logs",
+    "Opening a row jumps to the order detail for reassignment or exception handling.",
+  ],
+  "customer-reviews": [
+    "Support and ops",
+    "read customer ratings tied to real orders",
+    "Clicking a review opens the order that was rated.",
+  ],
+  "hsd-devices": [
+    "Dark store ops",
+    "see which HSD devices are online, who holds them, and their assign/release history",
+    "History is filtered by date range and never invented when the API is empty.",
   ],
   "rider-earn": [
     "Finance",

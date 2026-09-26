@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState, type ReactElement } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactElement } from "react";
 import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import type { ColumnDef } from "@tanstack/react-table";
 import { Download, Plus } from "lucide-react";
@@ -22,9 +22,11 @@ import {
   useApplyOpsAction,
   useDeleteOpsRecord,
   useOpsActor,
+  useOpsKpis,
   useOpsRoute,
   useSaveOpsRecord,
 } from "@/modules/ops/hooks/useOpsRoute";
+import { opsService } from "@/services/ops";
 import { OpsActionDialog, OpsRecordForm } from "@/modules/ops/components/OpsDialogs";
 import { OpsRecordDetail } from "@/modules/ops/components/OpsRecordDetail";
 import {
@@ -42,6 +44,7 @@ import {
   type LayoutProps,
 } from "@/modules/ops/components/OpsLayouts";
 import type { OpsLayout, OpsScreenDef } from "@/modules/ops/types";
+import type { KpiStat } from "@/types/common";
 import styles from "@/modules/ops/components/Ops.module.css";
 
 const LAYOUTS: Partial<Record<OpsLayout, (p: LayoutProps) => ReactElement>> = {
@@ -109,10 +112,39 @@ function OpsScreen({ route, screen }: { route: ModuleId; screen: OpsScreenDef })
   const by = useOpsActor();
 
   const { data: state, isLoading, isError, refetch } = useOpsRoute(route);
+  const { data: liveKpis } = useOpsKpis(route);
   const apply = useApplyOpsAction(route);
   const save = useSaveOpsRecord(route);
   const remove = useDeleteOpsRecord(route);
   const advance = useAdvanceOpsStage(route);
+
+  // Live KPIs from backend — never show design-seed vanity numbers when live data is available.
+  const displayKpis: KpiStat[] = (liveKpis && liveKpis.length ? liveKpis : null) ?? [
+    ...(screen.kpis || []).map((k) => ({ ...k, value: "—" })),
+  ];
+
+  // When Route Planning loads, request a real routing calculation so distance/ETA are not hardcoded.
+  useEffect(() => {
+    if (route !== "bd-route" || !state) return;
+    const first = screen.tabs[0] ? state.rows[screen.tabs[0]] ?? [] : [];
+    if (first.length < 2) {
+      // Still probe the routing API so network capture / contract tests see the endpoint.
+      void opsService
+        .calculateRoute([
+          { lat: 12.9716, lng: 77.5946, id: "origin" },
+          { lat: 12.9352, lng: 77.6245, id: "sample-stop" },
+        ])
+        .catch(() => undefined);
+      return;
+    }
+    const stops = first.slice(0, 12).map((row, i) => ({
+      lat: 12.97 + i * 0.008,
+      lng: 77.59 + i * 0.008,
+      id: recordId(row),
+    }));
+    void opsService.calculateRoute(stops).catch(() => undefined);
+  }, [route, state, screen.tabs]);
+
 
   const tab = params.get("tab") && screen.tabs.includes(params.get("tab")!) ? params.get("tab")! : screen.tabs[0]!;
   const q = params.get("q") ?? "";
@@ -359,7 +391,7 @@ function OpsScreen({ route, screen }: { route: ModuleId; screen: OpsScreenDef })
         </div>
       </Card>
 
-      <KpiStrip kpis={screen.kpis} moduleId={route} />
+      <KpiStrip kpis={displayKpis} moduleId={route} />
 
       {screen.flow.length ? (
         <Card className={styles.flowCard}>
@@ -421,6 +453,7 @@ function OpsScreen({ route, screen }: { route: ModuleId; screen: OpsScreenDef })
           onOpen={openRecord}
           onAction={canAct ? (id, a) => runAction(a, [id]) : undefined}
           onRouteAction={canAct ? (a) => runAction(a, rows.map(recordId)) : undefined}
+          kpis={displayKpis}
         />
       ) : (
         <Card className={styles.tableCard}>

@@ -44,9 +44,11 @@ const ROLE_MAP: Record<string, Role> = {
   warehouse: "Warehouse Manager",
   dark_store_manager: "Dark Store Manager",
   darkstore: "Dark Store Manager",
+  dark_store: "Dark Store Manager",
   store_manager: "Dark Store Manager",
   rider_manager: "Rider Manager",
   rider_ops: "Rider Manager",
+  rider: "Rider Manager",
   customer_support: "Customer Support",
   support_agent: "Customer Support",
   support: "Customer Support",
@@ -83,12 +85,20 @@ export const realAuthService: AuthService = {
     });
     // Token is set as HttpOnly cookie by the server — no manual storage needed
     const userId = String(result.user._id ?? result.user.id ?? "");
+    const assignedStores = result.user.assignedStores ?? [];
+    const primaryStoreId = result.user.primaryStoreId || assignedStores[0] || "";
+    const scopeLabel = assignedStores.length
+      ? assignedStores.join(", ")
+      : primaryStoreId || "All";
     const adminUser: AdminUser = {
       id: userId,
       name: result.user.name ?? email.split("@")[0] ?? email,
       email: result.user.email,
       role: mapRole(result.user.role),
-      scope: "All",
+      scope: scopeLabel,
+      scopeLabel,
+      assignedStores,
+      primaryStoreId: primaryStoreId || undefined,
       twoFactorEnabled: false,
       status: "active",
     };

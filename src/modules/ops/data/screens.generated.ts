@@ -3559,7 +3559,7 @@ export const GENERATED_SCREENS = {
     "id": "stall-overview",
     "group": "Container Stalls",
     "title": "Network Overview",
-    "hint": "How the whole stall network is performing — 4 areas, 36 stalls, and every customer they brought onto the app today.",
+    "hint": "How the whole stall network is performing — areas, container stalls, and every customer they brought onto the app today.",
     "flow": [],
     "kpis": [
       {

@@ -1,13 +1,16 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  SEED_LIVE_RIDERS,
-  SEED_RIDER_DIRECTORY,
-  RIDER_PERFORMANCE_ROWS,
-  RIDER_EARNINGS_ROWS,
-  RIDER_INCIDENT_ROWS,
-} from "@/services/riders/seed";
-import { useRidersLive, useRidersDirectory, useRidersStats, useAssignRiderOrder, useUpdateRiderStatus, useRaiseRiderIncident } from "@/modules/riders/hooks/useRidersData";
+  useRidersLive,
+  useRidersDirectory,
+  useRidersStats,
+  useAssignRiderOrder,
+  useUpdateRiderStatus,
+  useRaiseRiderIncident,
+  useRiderPerformance,
+  useRiderEarningsTab,
+  useRiderIncidentsTab,
+} from "@/modules/riders/hooks/useRidersData";
 import { RiderFleetMap } from "@/modules/riders/components/RiderFleetMap";
 import { LiveGpsMap } from "@/modules/riders/components/LiveGpsMap";
 import { useLiveRiderPositions } from "@/modules/riders/hooks/useLiveRiderPositions";
@@ -15,6 +18,7 @@ import { api } from "@/lib/apiClient";
 import { KpiStrip } from "@/components/ui/KpiStrip";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { useUiStore } from "@/store/uiStore";
 import type { Badge as BadgeType } from "@/types/common";
 import styles from "./RidersLivePage.module.css";
@@ -24,6 +28,9 @@ const TABS = ["Live deliveries", "Live GPS", "Rider directory", "Performance", "
 const RIDER_ACTIONS = ["Assign order", "Reassign order", "Call rider", "Mark on break", "Approve settlement", "Raise incident"];
 
 function SimpleTable({ cols, rows }: { cols: string[]; rows: (string | BadgeType)[][] }) {
+  if (!rows.length) {
+    return <EmptyState title="No records yet" description="Live data will appear here when the backend has riders for this view." />;
+  }
   return (
     <div className={styles.tableScroll}>
       <table className={styles.table}>
@@ -59,19 +66,25 @@ export function RidersLivePage() {
   const pushToast = useUiStore((s) => s.pushToast);
   const navigate = useNavigate();
 
-  const { data: liveData } = useRidersLive();
+  const { data: liveData, isLoading: liveLoading } = useRidersLive();
   const { data: dirData } = useRidersDirectory();
   const { data: stats } = useRidersStats();
+  const { data: performanceRows = [] } = useRiderPerformance();
+  const { data: earningsRows = [] } = useRiderEarningsTab();
+  const { data: incidentRows = [] } = useRiderIncidentsTab();
   const assignOrder = useAssignRiderOrder();
   const updateStatus = useUpdateRiderStatus();
   const raiseIncident = useRaiseRiderIncident();
   const gpsPositions = useLiveRiderPositions();
 
-  // Use real API data; fall back to seed when the DB is empty
-  const liveRiders = liveData && liveData.length > 0 ? liveData : SEED_LIVE_RIDERS;
-  const directory = dirData && dirData.length > 0 ? dirData : SEED_RIDER_DIRECTORY;
+  // Real API only — never fall back to design seed riders.
+  const liveRiders = liveData ?? [];
+  const directory = dirData ?? [];
 
-  const [selectedId, setSelectedId] = useState<string | undefined>(liveRiders[0]?.id);
+  const [selectedId, setSelectedId] = useState<string | undefined>();
+  useEffect(() => {
+    if (!selectedId && liveRiders[0]?.id) setSelectedId(liveRiders[0].id);
+  }, [liveRiders, selectedId]);
   const selected = liveRiders.find((r) => r.id === selectedId) ?? liveRiders[0];
 
   function runRiderAction(action: string) {
@@ -127,12 +140,13 @@ export function RidersLivePage() {
         try {
           const payouts = await api.get<
             | Array<{ _id?: string; id?: string; riderId?: string; riderName?: string; status?: string }>
-            | { list?: Array<{ _id?: string; id?: string; riderId?: string; riderName?: string; status?: string }>; data?: Array<{ _id?: string; id?: string; riderId?: string; riderName?: string; status?: string }> }
+            | { list?: Array<{ _id?: string; id?: string; riderId?: string; riderName?: string; status?: string }>; data?: Array<{ _id?: string; id?: string; riderId?: string; riderName?: string; status?: string }>; items?: Array<{ _id?: string; id?: string; riderId?: string; riderName?: string; status?: string }> }
           >("/api/v1/admin/finance/rider-cash/payouts");
           const rows = Array.isArray(payouts)
             ? payouts
-            : ((payouts as { list?: unknown[]; data?: unknown[] }).list ??
+            : ((payouts as { list?: unknown[]; data?: unknown[]; items?: unknown[] }).list ??
               (payouts as { data?: unknown[] }).data ??
+              (payouts as { items?: unknown[] }).items ??
               []);
           const match = (rows as Array<{ _id?: string; id?: string; riderId?: string; riderName?: string; status?: string }>).find(
             (p) =>
@@ -185,78 +199,91 @@ export function RidersLivePage() {
       </div>
 
       {tab === "Live deliveries" ? (
-        <div className={styles.board}>
-          <div className={styles.mapCol}>
-            <RiderFleetMap riders={liveRiders} selectedId={selectedId} onSelect={setSelectedId} />
-            {selected ? (
-              <Card className={styles.detailCard}>
-                <div className={styles.detailName}>{selected.name}</div>
-                <div className={styles.fields}>
-                  <div className={styles.field}>
-                    <span className={styles.fieldLabel}>Hub</span>
-                    <span className={styles.fieldValue}>{selected.hub}</span>
-                  </div>
-                  <div className={styles.field}>
-                    <span className={styles.fieldLabel}>Current order</span>
-                    <span className={styles.fieldValue}>{selected.currentOrder}</span>
-                  </div>
-                  <div className={styles.field}>
-                    <span className={styles.fieldLabel}>Zone</span>
-                    <span className={styles.fieldValue}>{selected.zone}</span>
-                  </div>
-                  <div className={styles.field}>
-                    <span className={styles.fieldLabel}>ETA</span>
-                    <span className={styles.fieldValue}>{selected.eta}</span>
-                  </div>
-                  <div className={styles.field}>
-                    <span className={styles.fieldLabel}>Vehicle</span>
-                    <span className={styles.fieldValue}>{selected.vehicle}</span>
-                  </div>
-                  <div className={styles.field}>
-                    <span className={styles.fieldLabel}>Rating</span>
-                    <span className={styles.fieldValue}>★ {selected.rating}</span>
-                  </div>
-                </div>
-                <div className={styles.actionsRow}>
-                  {RIDER_ACTIONS.map((a) => (
-                    <button
-                      key={a}
-                      type="button"
-                      className={styles.actionBtn}
-                      disabled={assignOrder.isPending && (a === "Assign order" || a === "Reassign order")}
-                      onClick={() => runRiderAction(a)}
-                    >
-                      {a}
-                    </button>
-                  ))}
-                </div>
-              </Card>
-            ) : null}
-          </div>
-
-          <Card className={styles.queueCard}>
-            <div className={styles.queueTitle}>Delivery queue</div>
-            <div className={styles.queueList}>
-              {liveRiders.map((r) => (
-                <button
-                  key={r.id}
-                  type="button"
-                  className={styles.queueRow}
-                  data-selected={r.id === selectedId}
-                  onClick={() => setSelectedId(r.id)}
-                >
-                  <div className={styles.queueTop}>
-                    <span className={styles.queueName}>{r.name}</span>
-                    <span className={styles.queueRating}>★ {r.rating}</span>
-                  </div>
-                  {r.currentOrder !== "—" ? <div className={styles.queueOrder}>{r.currentOrder}</div> : null}
-                  <div className={styles.queueMeta}>{r.eta}</div>
-                  <Badge label={r.status.label} tone={r.status.tone} />
-                </button>
-              ))}
-            </div>
+        liveLoading ? (
+          <Card>
+            <EmptyState title="Loading riders…" />
           </Card>
-        </div>
+        ) : liveRiders.length === 0 ? (
+          <Card>
+            <EmptyState
+              title="No riders online"
+              description="The live fleet is empty. Riders appear here when they come online in the rider app — design seed data is never shown."
+            />
+          </Card>
+        ) : (
+          <div className={styles.board}>
+            <div className={styles.mapCol}>
+              <RiderFleetMap riders={liveRiders} selectedId={selectedId} onSelect={setSelectedId} />
+              {selected ? (
+                <Card className={styles.detailCard}>
+                  <div className={styles.detailName}>{selected.name}</div>
+                  <div className={styles.fields}>
+                    <div className={styles.field}>
+                      <span className={styles.fieldLabel}>Hub</span>
+                      <span className={styles.fieldValue}>{selected.hub}</span>
+                    </div>
+                    <div className={styles.field}>
+                      <span className={styles.fieldLabel}>Current order</span>
+                      <span className={styles.fieldValue}>{selected.currentOrder}</span>
+                    </div>
+                    <div className={styles.field}>
+                      <span className={styles.fieldLabel}>Zone</span>
+                      <span className={styles.fieldValue}>{selected.zone}</span>
+                    </div>
+                    <div className={styles.field}>
+                      <span className={styles.fieldLabel}>ETA</span>
+                      <span className={styles.fieldValue}>{selected.eta}</span>
+                    </div>
+                    <div className={styles.field}>
+                      <span className={styles.fieldLabel}>Vehicle</span>
+                      <span className={styles.fieldValue}>{selected.vehicle}</span>
+                    </div>
+                    <div className={styles.field}>
+                      <span className={styles.fieldLabel}>Rating</span>
+                      <span className={styles.fieldValue}>★ {selected.rating}</span>
+                    </div>
+                  </div>
+                  <div className={styles.actionsRow}>
+                    {RIDER_ACTIONS.map((a) => (
+                      <button
+                        key={a}
+                        type="button"
+                        className={styles.actionBtn}
+                        disabled={assignOrder.isPending && (a === "Assign order" || a === "Reassign order")}
+                        onClick={() => runRiderAction(a)}
+                      >
+                        {a}
+                      </button>
+                    ))}
+                  </div>
+                </Card>
+              ) : null}
+            </div>
+
+            <Card className={styles.queueCard}>
+              <div className={styles.queueTitle}>Delivery queue</div>
+              <div className={styles.queueList}>
+                {liveRiders.map((r) => (
+                  <button
+                    key={r.id}
+                    type="button"
+                    className={styles.queueRow}
+                    data-selected={r.id === selectedId}
+                    onClick={() => setSelectedId(r.id)}
+                  >
+                    <div className={styles.queueTop}>
+                      <span className={styles.queueName}>{r.name}</span>
+                      <span className={styles.queueRating}>★ {r.rating}</span>
+                    </div>
+                    {r.currentOrder !== "—" ? <div className={styles.queueOrder}>{r.currentOrder}</div> : null}
+                    <div className={styles.queueMeta}>{r.eta}</div>
+                    <Badge label={r.status.label} tone={r.status.tone} />
+                  </button>
+                ))}
+              </div>
+            </Card>
+          </div>
+        )
       ) : tab === "Live GPS" ? (
         <Card>
           <div style={{ marginBottom: 8, fontSize: 13, color: "#6b7280" }}>
@@ -277,21 +304,21 @@ export function RidersLivePage() {
         <Card>
           <SimpleTable
             cols={["Rider", "Hub", "Deliveries", "Accept rate", "On-time", "Avg time", "Rating", "Status"]}
-            rows={RIDER_PERFORMANCE_ROWS}
+            rows={performanceRows}
           />
         </Card>
       ) : tab === "Earnings" ? (
         <Card>
           <SimpleTable
             cols={["Rider", "Hub", "Base", "Incentive", "Deduction", "Net", "Cycle", "Status"]}
-            rows={RIDER_EARNINGS_ROWS}
+            rows={earningsRows}
           />
         </Card>
       ) : (
         <Card>
           <SimpleTable
             cols={["Incident", "Rider", "Type", "Order", "Zone", "Detail", "Age", "Status"]}
-            rows={RIDER_INCIDENT_ROWS}
+            rows={incidentRows}
           />
         </Card>
       )}

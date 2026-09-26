@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, type CSSProperties } from "react";
 import {
   useSystemUsers,
   useSetUserActive,
@@ -8,9 +8,10 @@ import {
   useUpdateUser,
 } from "@/modules/system/hooks/useUsers";
 import { useRolesList } from "@/modules/roles/hooks/useRoles";
+import { useStoreRecords } from "@/modules/darkstore/hooks/useStores";
 import { AdminUserFormModal } from "@/modules/system/components/AdminUserFormModal";
 import type { AdminUserInput } from "@/services/system/usersService";
-import { roleId } from "@/services/roles/rolesService";
+import { roleId, isStoreScopedRole } from "@/services/roles/rolesService";
 import { SYSTEM_CONFIGS } from "@/services/workspace/data/system";
 import { PurposeBanner } from "@/components/workspace/PurposeBanner";
 import { ViewToggle, type ViewMode } from "@/components/workspace/ViewToggle";
@@ -38,6 +39,17 @@ const FLOW_AT = 4;
 
 const INVITE_UNAVAILABLE =
   "Resend invite is not available — the backend has no invite-resend endpoint. Create the user again or reset their password.";
+
+const selectStyle: CSSProperties = {
+  display: "block",
+  width: "100%",
+  marginTop: 6,
+  padding: 8,
+  borderRadius: 6,
+  border: "1px solid var(--border)",
+  background: "var(--bg)",
+  color: "var(--tx)",
+};
 
 function matchesTab(user: SystemUser, tab: string): boolean {
   if (tab === "Admin users") return user.accountStatus === "active";
@@ -82,6 +94,7 @@ function exportAccessCsv(user: SystemUser) {
 export function UsersDirectoryPage() {
   const { data: users, isLoading, isError, refetch } = useSystemUsers();
   const { data: roles } = useRolesList();
+  const { data: stores } = useStoreRecords();
   const setActive = useSetUserActive();
   const createUser = useCreateAdminUser();
   const resetPassword = useResetUserPassword();
@@ -96,9 +109,15 @@ export function UsersDirectoryPage() {
   const [roleDialogOpen, setRoleDialogOpen] = useState(false);
   const [scopeDialogOpen, setScopeDialogOpen] = useState(false);
   const [pickedRoleId, setPickedRoleId] = useState("");
-  const [scopeInput, setScopeInput] = useState("");
+  const [pickedStoreId, setPickedStoreId] = useState("");
 
   const filtered = useMemo(() => (users ?? []).filter((u) => matchesTab(u, tab)), [users, tab]);
+
+  const pickedRole = useMemo(
+    () => (roles ?? []).find((r) => roleId(r) === pickedRoleId) ?? null,
+    [roles, pickedRoleId]
+  );
+  const roleNeedsStore = isStoreScopedRole(pickedRole);
 
   const liveKpis = useMemo(() => {
     const list = users ?? [];
@@ -132,6 +151,11 @@ export function UsersDirectoryPage() {
     u.twoFactor,
     u.status,
   ]);
+
+  function resolveStoreKey(storeId: string): string {
+    const s = (stores ?? []).find((x) => x._id === storeId);
+    return s?.code || storeId;
+  }
 
   function toggleActive(user: SystemUser) {
     const activating = user.accountStatus === "deactivated";
@@ -174,6 +198,9 @@ export function UsersDirectoryPage() {
   function openRoleDialog(user: SystemUser) {
     const match = (roles ?? []).find((r) => r.name === user.role);
     setPickedRoleId(match ? roleId(match) : "");
+    const byCode = (stores ?? []).find((s) => user.scope?.includes(s.code) || user.scope === s.code);
+    const byName = (stores ?? []).find((s) => user.scope?.includes(s.name));
+    setPickedStoreId(byCode?._id || byName?._id || "");
     setRoleDialogOpen(true);
   }
 
@@ -182,11 +209,26 @@ export function UsersDirectoryPage() {
       pushToast("Pick a role first", "error");
       return;
     }
+    if (roleNeedsStore && !pickedStoreId) {
+      pushToast("Pick the dark store this manager controls", "error");
+      return;
+    }
+    const storeKey = pickedStoreId ? resolveStoreKey(pickedStoreId) : undefined;
     assignRole.mutate(
-      { id: user.id, roleId: pickedRoleId },
+      {
+        id: user.id,
+        roleId: pickedRoleId,
+        assignedStores: storeKey ? [storeKey] : undefined,
+        primaryStoreId: storeKey,
+      },
       {
         onSuccess: () => {
-          pushToast(`Role updated for ${user.name}`, "success");
+          pushToast(
+            storeKey
+              ? `Role updated for ${user.name} · store ${storeKey}`
+              : `Role updated for ${user.name}`,
+            "success"
+          );
           setRoleDialogOpen(false);
         },
         onError: (e) => pushToast((e as Error).message || "Couldn't assign role", "error"),
@@ -195,23 +237,23 @@ export function UsersDirectoryPage() {
   }
 
   function openScopeDialog(user: SystemUser) {
-    setScopeInput(user.scope === "Global" || user.scope === "—" ? "" : user.scope);
+    const byCode = (stores ?? []).find((s) => user.scope?.includes(s.code) || user.scope === s.code);
+    const byName = (stores ?? []).find((s) => user.scope?.includes(s.name));
+    setPickedStoreId(byCode?._id || byName?._id || "");
     setScopeDialogOpen(true);
   }
 
   function saveScope(user: SystemUser) {
-    const stores = scopeInput
-      .split(/[,;\n]+/)
-      .map((s) => s.trim())
-      .filter(Boolean);
+    if (!pickedStoreId) {
+      pushToast("Select a dark store", "error");
+      return;
+    }
+    const storeKey = resolveStoreKey(pickedStoreId);
     updateUser.mutate(
-      { id: user.id, input: { assignedStores: stores } },
+      { id: user.id, input: { assignedStores: [storeKey], primaryStoreId: storeKey } },
       {
         onSuccess: () => {
-          pushToast(
-            stores.length ? `Scope set to ${stores.join(", ")}` : `Scope cleared for ${user.name}`,
-            "success"
-          );
+          pushToast(`Scope set to ${storeKey}`, "success");
           setScopeDialogOpen(false);
         },
         onError: (e) => pushToast((e as Error).message || "Couldn't update scope", "error"),
@@ -330,7 +372,7 @@ export function UsersDirectoryPage() {
                       Edit role
                     </Button>
                     <Button size="sm" onClick={() => openScopeDialog(selected)}>
-                      Change scope
+                      Change dark store
                     </Button>
                     {selected.accountStatus === "invited" ? (
                       <Button size="sm" disabled title={INVITE_UNAVAILABLE}>
@@ -400,21 +442,38 @@ export function UsersDirectoryPage() {
             <select
               value={pickedRoleId}
               onChange={(e) => setPickedRoleId(e.target.value)}
-              style={{ display: "block", width: "100%", marginTop: 6, padding: 8 }}
+              style={selectStyle}
             >
               <option value="">Select a role…</option>
               {(roles ?? []).map((r) => (
                 <option key={roleId(r)} value={roleId(r)}>
-                  {r.name}
+                  {r.name}{isStoreScopedRole(r) ? " · store scoped" : ""}
                 </option>
               ))}
             </select>
           </label>
+          {roleNeedsStore ? (
+            <label style={{ fontSize: 12, fontWeight: 600 }}>
+              Dark store they control
+              <select
+                value={pickedStoreId}
+                onChange={(e) => setPickedStoreId(e.target.value)}
+                style={selectStyle}
+              >
+                <option value="">Select dark store…</option>
+                {(stores ?? []).filter((s) => s.isActive !== false).map((s) => (
+                  <option key={s._id} value={s._id}>
+                    {s.name} ({s.code})
+                  </option>
+                ))}
+              </select>
+            </label>
+          ) : null}
           <Button
             variant="primary"
             size="sm"
             isLoading={assignRole.isPending}
-            disabled={!selected || !pickedRoleId}
+            disabled={!selected || !pickedRoleId || (roleNeedsStore && !pickedStoreId)}
             onClick={() => selected && saveRole(selected)}
           >
             Save role
@@ -422,25 +481,34 @@ export function UsersDirectoryPage() {
         </div>
       </Dialog>
 
-      <Dialog open={scopeDialogOpen} onOpenChange={setScopeDialogOpen} title={`Change scope — ${selected?.name ?? ""}`}>
+      <Dialog open={scopeDialogOpen} onOpenChange={setScopeDialogOpen} title={`Change dark store — ${selected?.name ?? ""}`}>
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
           <label style={{ fontSize: 12, fontWeight: 600 }}>
-            Assigned stores (comma-separated codes)
-            <input
-              value={scopeInput}
-              onChange={(e) => setScopeInput(e.target.value)}
-              placeholder="e.g. DS-Adyar-01, DS-02"
-              style={{ display: "block", width: "100%", marginTop: 6, padding: 8 }}
-            />
+            Assigned dark store
+            <select
+              value={pickedStoreId}
+              onChange={(e) => setPickedStoreId(e.target.value)}
+              style={selectStyle}
+            >
+              <option value="">Select dark store…</option>
+              {(stores ?? []).filter((s) => s.isActive !== false).map((s) => (
+                <option key={s._id} value={s._id}>
+                  {s.name} ({s.code})
+                </option>
+              ))}
+            </select>
           </label>
+          <p style={{ margin: 0, fontSize: 12, color: "var(--tx-muted)" }}>
+            The manager only sees orders, inventory and ops data for this store. Takes effect on next sign-in.
+          </p>
           <Button
             variant="primary"
             size="sm"
             isLoading={updateUser.isPending}
-            disabled={!selected}
+            disabled={!selected || !pickedStoreId}
             onClick={() => selected && saveScope(selected)}
           >
-            Save scope
+            Save dark store
           </Button>
         </div>
       </Dialog>
