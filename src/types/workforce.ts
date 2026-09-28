@@ -62,6 +62,26 @@ export interface ShiftTemplate {
   headcountTarget: string;
   scope: string;
   status: Badge;
+  startTime?: string;
+  endTime?: string;
+  warehouseKey?: string;
+}
+
+/** Live booked/started shift row for Dashboard workforce tracking. */
+export interface LiveShiftWorker {
+  id: string;
+  picker: string;
+  role: string;
+  darkStore: string;
+  shiftName: string;
+  hours: string;
+  startTime: string;
+  endTime: string;
+  bookingStatus: string;
+  currentStatus: string;
+  startedAt: string | null;
+  onShift: boolean;
+  isOnline: boolean;
 }
 
 /** A shift x location staffing row on the roster board (roster). */

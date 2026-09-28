@@ -74,4 +74,9 @@ export const mockShiftsService: ShiftsService = {
     await mockDelay(220);
     table.update((rows) => rows.filter((t) => t.id !== id));
   },
+
+  async listLiveWorkforce() {
+    await mockDelay();
+    return [];
+  },
 };

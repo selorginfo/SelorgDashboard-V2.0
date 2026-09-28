@@ -114,9 +114,45 @@ function mapPerson(raw: Record<string, unknown>, kind: WorkerKind, index: number
     contact: String(raw.phone ?? raw.mobile ?? raw.contact ?? "—"),
     vehicle: kind === "rider" ? String(raw.vehicle ?? raw.vehicleType ?? "") || undefined : undefined,
     stats: [
-      { label: kind === "rider" ? "Deliveries" : "Orders", value: String(raw.deliveriesToday ?? raw.ordersToday ?? raw.orders ?? raw.deliveriesCount ?? raw.totalDeliveries ?? "0") },
-      { label: kind === "rider" ? "On-time" : "Accuracy", value: String(raw.onTime ?? raw.onTimeRate ?? raw.accuracy ?? "—") },
-      { label: "Rating", value: String(raw.rating ?? raw.avgRating ?? "—") },
+      {
+        label: kind === "rider" ? "Deliveries" : "Shift",
+        value:
+          kind === "rider"
+            ? String(raw.deliveriesToday ?? raw.ordersToday ?? raw.orders ?? raw.deliveriesCount ?? raw.totalDeliveries ?? "0")
+            : String(
+                raw.shiftName ??
+                  (raw.currentShift && typeof raw.currentShift === "object"
+                    ? (raw.currentShift as { name?: string }).name
+                    : undefined) ??
+                  (raw.onShift || raw.activeShiftId ? "On shift" : "—"),
+              ),
+      },
+      {
+        label: kind === "rider" ? "On-time" : "Hours",
+        value:
+          kind === "rider"
+            ? String(raw.onTime ?? raw.onTimeRate ?? raw.accuracy ?? "—")
+            : String(
+                raw.shiftHours ??
+                  (raw.currentShift && typeof raw.currentShift === "object"
+                    ? (raw.currentShift as { hours?: string }).hours
+                    : undefined) ??
+                  "—",
+              ),
+      },
+      {
+        label: kind === "rider" ? "Rating" : "Status",
+        value:
+          kind === "rider"
+            ? String(raw.rating ?? raw.avgRating ?? "—")
+            : String(
+                raw.bookingStatus ??
+                  (raw.currentShift && typeof raw.currentShift === "object"
+                    ? (raw.currentShift as { bookingStatus?: string }).bookingStatus
+                    : undefined) ??
+                  status.label,
+              ),
+      },
     ],
     status,
     tab: String(raw.tab ?? tabFor(status, kind)),
